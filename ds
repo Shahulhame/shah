@@ -1,0 +1,358 @@
+package com.sgl.smartpra.batch.iata.invoice.app.repository.entity;
+
+import java.io.Serializable;
+import java.sql.Date;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+
+import com.sgl.smartpra.batch.iata.invoice.app.common.DatePrefixedSequenceIdGenerator;
+
+/**
+ * The persistent class for the misc_billing_inv_trans_header database table.
+ * 
+ */
+
+@SuppressWarnings("serial")
+@Entity
+@Table(name = "misc_billing_trn_invoice")
+@NamedQuery(name = "InvoiceHeaderEntity.findAll", query = "SELECT m FROM InvoiceHeaderEntity m")
+public class InvoiceHeaderEntity extends BaseEntity implements Serializable {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY,generator="invoice_urn_seq")
+	@GenericGenerator(name = "invoice_urn_seq", strategy = "com.sgl.smartpra.batch.iata.invoice.app.common.DatePrefixedSequenceIdGenerator",
+			parameters = {@Parameter(name=DatePrefixedSequenceIdGenerator.INCREMENT_PARAM, value = "30")})
+	@Column(name = "invoice_urn", nullable = false)
+	private String invoice_urn;
+
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "trans_hdr_autoid", referencedColumnName = "trans_hdr_autoid", nullable = false, updatable = false)
+	private TransmissionHeaderEntity miscBillingInvTransHeader;
+
+	@Column(name = "invoice_number", nullable = false)
+	private String invoiceNumber;
+
+	@Column(name = "invoice_date")
+	private Date invoiceDate;
+
+	@Column(name = "invoice_type")
+	private Integer invoiceType;
+
+	@Column(name = "tax_invoice_number")
+	private String taxinvoiceNumber;
+
+	@Column(name = "tax_point_date")
+	private Date taxPointDate;
+
+	@Column(name = "location_code", nullable = false)
+	private String locationCode;
+
+	@Column(name = "loaction_code_icao", nullable = false)
+	private String loactionCodeIcao;
+
+	@Column(name = "location_name")
+	private String locationName;
+
+	@Column(name = "charge_category_code")
+	private String chargeCategoryCode;
+
+	@Column(name = "seller_organization_id")
+	private String sellerOrganizationId;
+
+	@Column(name = "buyer_organization_id")
+	private String buyerOrganizationId;
+
+	@Column(name = "digital_signature_flag")
+	private String digitalSignatureFlag;
+
+	@Column(name = "po_number")
+	private String poNumber;
+
+	@Column(name = "invoice_template_language")
+	private String invoiceTemplatLanguage;
+
+	@Column(name = "is_validation_flag")
+	private String isValidationFlag;
+
+	@Column(name = "rejection_flag")
+	private String rejectionFlag;
+
+	@Column(name = "rejection_stage")
+	private Integer rejectionStage;
+
+	@Column(name = "is_invoice_number")
+	private String is_invoiceNumber;
+
+	@Column(name = "settlement_month_period")
+	private String settlementMonthPeriod;
+
+	@Column(name = "correspondance_flag")
+	private String correspondanceFlag;
+
+	@Column(name = "authority_to_bill_flag")
+	private String authorityToBillFlag;
+
+	@Column(name = "correspondanc_ref_no")
+	private Integer corresPondancRefNo;
+
+	@Column(name = "dispute_ref_number")
+	private String disputeRefNumber;
+
+	@Column(name = "original_inv_number")
+	private String originalInvNumber;
+
+	@Column(name = "original_inv_billing_period")
+	private String originalInvBillingPeriod;
+
+	public InvoiceHeaderEntity() {
+	}
+
+	public String getInvoice_urn() {
+		return invoice_urn;
+	}
+
+	public void setInvoice_urn(String invoice_urn) {
+		this.invoice_urn = invoice_urn;
+	}
+
+	public TransmissionHeaderEntity getMiscBillingInvTransHeader() {
+		return miscBillingInvTransHeader;
+	}
+
+	public void setMiscBillingInvTransHeader(TransmissionHeaderEntity miscBillingInvTransHeader) {
+		this.miscBillingInvTransHeader = miscBillingInvTransHeader;
+	}
+
+	public String getInvoiceNumber() {
+		return invoiceNumber;
+	}
+
+	public void setInvoiceNumber(String invoiceNumber) {
+		this.invoiceNumber = invoiceNumber;
+	}
+
+	public Date getInvoiceDate() {
+		return invoiceDate;
+	}
+
+	public void setInvoiceDate(Date invoiceDate) {
+		this.invoiceDate = invoiceDate;
+	}
+
+	public Integer getInvoiceType() {
+		return invoiceType;
+	}
+
+	public void setInvoiceType(Integer invoiceType) {
+		this.invoiceType = invoiceType;
+	}
+
+	public String getTaxinvoiceNumber() {
+		return taxinvoiceNumber;
+	}
+
+	public void setTaxinvoiceNumber(String taxinvoiceNumber) {
+		this.taxinvoiceNumber = taxinvoiceNumber;
+	}
+
+	public Date getTaxPointDate() {
+		return taxPointDate;
+	}
+
+	public void setTaxPointDate(Date taxPointDate) {
+		this.taxPointDate = taxPointDate;
+	}
+
+	public String getLocationCode() {
+		return locationCode;
+	}
+
+	public void setLocationCode(String locationCode) {
+		this.locationCode = locationCode;
+	}
+
+	public String getLoactionCodeIcao() {
+		return loactionCodeIcao;
+	}
+
+	public void setLoactionCodeIcao(String loactionCodeIcao) {
+		this.loactionCodeIcao = loactionCodeIcao;
+	}
+
+	public String getLocationName() {
+		return locationName;
+	}
+
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
+	}
+
+	public String getChargeCategoryCode() {
+		return chargeCategoryCode;
+	}
+
+	public void setChargeCategoryCode(String chargeCategoryCode) {
+		this.chargeCategoryCode = chargeCategoryCode;
+	}
+
+	public String getSellerOrganizationId() {
+		return sellerOrganizationId;
+	}
+
+	public void setSellerOrganizationId(String sellerOrganizationId) {
+		this.sellerOrganizationId = sellerOrganizationId;
+	}
+
+	public String getBuyerOrganizationId() {
+		return buyerOrganizationId;
+	}
+
+	public void setBuyerOrganizationId(String buyerOrganizationId) {
+		this.buyerOrganizationId = buyerOrganizationId;
+	}
+
+	public String getDigitalSignatureFlag() {
+		return digitalSignatureFlag;
+	}
+
+	public void setDigitalSignatureFlag(String digitalSignatureFlag) {
+		this.digitalSignatureFlag = digitalSignatureFlag;
+	}
+
+	public String getPoNumber() {
+		return poNumber;
+	}
+
+	public void setPoNumber(String poNumber) {
+		this.poNumber = poNumber;
+	}
+
+	public String getInvoiceTemplatLanguage() {
+		return invoiceTemplatLanguage;
+	}
+
+	public void setInvoiceTemplatLanguage(String invoiceTemplatLanguage) {
+		this.invoiceTemplatLanguage = invoiceTemplatLanguage;
+	}
+
+	public String getIsValidationFlag() {
+		return isValidationFlag;
+	}
+
+	public void setIsValidationFlag(String isValidationFlag) {
+		this.isValidationFlag = isValidationFlag;
+	}
+
+	public String getRejectionFlag() {
+		return rejectionFlag;
+	}
+
+	public void setRejectionFlag(String rejectionFlag) {
+		this.rejectionFlag = rejectionFlag;
+	}
+
+	public Integer getRejectionStage() {
+		return rejectionStage;
+	}
+
+	public void setRejectionStage(Integer rejectionStage) {
+		this.rejectionStage = rejectionStage;
+	}
+
+	public String getIs_invoiceNumber() {
+		return is_invoiceNumber;
+	}
+
+	public void setIs_invoiceNumber(String is_invoiceNumber) {
+		this.is_invoiceNumber = is_invoiceNumber;
+	}
+
+	public String getSettlementMonthPeriod() {
+		return settlementMonthPeriod;
+	}
+
+	public void setSettlementMonthPeriod(String settlementMonthPeriod) {
+		this.settlementMonthPeriod = settlementMonthPeriod;
+	}
+
+	public String getCorrespondanceFlag() {
+		return correspondanceFlag;
+	}
+
+	public void setCorrespondanceFlag(String correspondanceFlag) {
+		this.correspondanceFlag = correspondanceFlag;
+	}
+
+	public String getAuthorityToBillFlag() {
+		return authorityToBillFlag;
+	}
+
+	public void setAuthorityToBillFlag(String authorityToBillFlag) {
+		this.authorityToBillFlag = authorityToBillFlag;
+	}
+
+	public Integer getCorresPondancRefNo() {
+		return corresPondancRefNo;
+	}
+
+	public void setCorresPondancRefNo(Integer corresPondancRefNo) {
+		this.corresPondancRefNo = corresPondancRefNo;
+	}
+
+	public String getDisputeRefNumber() {
+		return disputeRefNumber;
+	}
+
+	public void setDisputeRefNumber(String disputeRefNumber) {
+		this.disputeRefNumber = disputeRefNumber;
+	}
+
+	public String getOriginalInvNumber() {
+		return originalInvNumber;
+	}
+
+	public void setOriginalInvNumber(String originalInvNumber) {
+		this.originalInvNumber = originalInvNumber;
+	}
+
+	public String getOriginalInvBillingPeriod() {
+		return originalInvBillingPeriod;
+	}
+
+	public void setOriginalInvBillingPeriod(String originalInvBillingPeriod) {
+		this.originalInvBillingPeriod = originalInvBillingPeriod;
+	}
+
+	@Override
+	public String toString() {
+		return "InvoiceHeaderEntity [invoice_urn=" + invoice_urn + ", miscBillingInvTransHeader="
+				+ miscBillingInvTransHeader + ", invoiceNumber=" + invoiceNumber + ", invoiceDate=" + invoiceDate
+				+ ", invoiceType=" + invoiceType + ", taxinvoiceNumber=" + taxinvoiceNumber + ", taxPointDate="
+				+ taxPointDate + ", locationCode=" + locationCode + ", loactionCodeIcao=" + loactionCodeIcao
+				+ ", locationName=" + locationName + ", chargeCategoryCode=" + chargeCategoryCode
+				+ ", sellerOrganizationId=" + sellerOrganizationId + ", buyerOrganizationId=" + buyerOrganizationId
+				+ ", digitalSignatureFlag=" + digitalSignatureFlag + ", poNumber=" + poNumber
+				+ ", invoiceTemplatLanguage=" + invoiceTemplatLanguage + ", isValidationFlag=" + isValidationFlag
+				+ ", rejectionFlag=" + rejectionFlag + ", rejectionStage=" + rejectionStage + ", is_invoiceNumber="
+				+ is_invoiceNumber + ", settlementMonthPeriod=" + settlementMonthPeriod + ", correspondanceFlag="
+				+ correspondanceFlag + ", authorityToBillFlag=" + authorityToBillFlag + ", corresPondancRefNo="
+				+ corresPondancRefNo + ", disputeRefNumber=" + disputeRefNumber + ", originalInvNumber="
+				+ originalInvNumber + ", originalInvBillingPeriod=" + originalInvBillingPeriod + "]";
+	}
+
+	
+
+}
