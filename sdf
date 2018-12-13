@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<InvoiceTransmission xsi:schemaLocation="http://www.IATA.com/IATAAviationInvoiceStandard http://www.iata.org/services/finance/sis/Documents/schemas/IATA_IS_XML_Invoice_Standard_V3.9.0.1.xsd" xmlns="http://www.IATA.com/IATAAviationInvoiceStandard" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <TransmissionHeader>
+    <transmissionDateTime>2018-08-16T04:18:46</transmissionDateTime>
+    <version>IATA:ISXMLInvoiceV3.9.0.2</version>
+    <transmissionID>793b3df6-61f4-44bb-bcfc-4a010865ef72</transmissionID>
+    <issuingOrganizationID>A89</issuingOrganizationID>
+    <receivingOrganizationID>A90</receivingOrganizationID>
+    <billingCategory>Miscellaneous</billingCategory>
+  </TransmissionHeader>
+  <Invoice>
+		<invoiceHeader>
+			<invoiceNumber>AirT007T</invoiceNumber>
+			<invoiceDate>2018-08-14</invoiceDate>
+			<invoiceType>Invoice</invoiceType>
+			<locationCode>YUL</locationCode>
+			<chargeCategory>Airport</chargeCategory>
+			<sellerOrganization>
+				<organizationID>A89</organizationID>
+				<locationID>Main</locationID>
+			</sellerOrganization>
+			<buyerOrganization>
+				<organizationID>A55</organizationID>
+				<locationID>Main</locationID>
+			</buyerOrganization>
+		</invoiceHeader>
+		  </Invoice>
+  <TransmissionSummary>
+		<invoiceCount>1</invoiceCount>
+		<totalAmount CurrencyCode="USD">4600.80</totalAmount>
+	</TransmissionSummary>
+</InvoiceTransmission>
