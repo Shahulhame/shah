@@ -1,0 +1,3322 @@
+package com.sgl.smartpra.batch.flown.amadeus.etl.app.domain;
+
+import java.io.Serializable;
+import javax.persistence.*;
+
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.file.mapping.FieldSetMapper;
+import org.springframework.batch.item.file.transform.LineTokenizer;
+
+import com.sgl.smartpra.batch.flown.amadeus.etl.app.processor.AmadeusETLTicketCouponProcessor;
+import com.sgl.smartpra.batch.flown.amadeus.etl.app.processor.AmadeusETLTicketMainProcessor;
+import com.sgl.smartpra.batch.flown.amadeus.etl.app.writer.AmadeusTicketMainWriter;
+
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.Date;
+
+/**
+ * The persistent class for the ticket_coupon database table.
+ * 
+ */
+@Entity
+@Table(name = "ticket_coupon", schema = "smartprasales")
+@NamedQuery(name = "TicketCoupon.findAll", query = "SELECT t FROM TicketCoupon t")
+public class TicketCoupon extends AmadeusEtlRecord implements Serializable {
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "trn_tkt_cpn_id", unique = true, nullable = false)
+	private int trnTktCpnId;
+
+	// bi-directional many-to-one association to TicketMain
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "trn_tkt_id", referencedColumnName = "trn_tkt_id")
+	private TicketMain ticketMain;
+
+	@Column(name = "ach_factor", length = 10)
+	private String achFactor;
+
+	@Column(name = "ach_high_y_fare_amount", precision = 15, scale = 3)
+	private BigDecimal achHighYFareAmount;
+
+	@Column(name = "ach_high_y_fare_currency", length = 3)
+	private String achHighYFareCurrency;
+
+	@Column(name = "ach_high_y_fare_details", length = 20)
+	private String achHighYFareDetails;
+
+	@Column(name = "additional_commission", nullable = false, precision = 15, scale = 3)
+	private BigDecimal additionalCommission;
+
+	@Column(name = "adjusted_value", precision = 15, scale = 3)
+	private BigDecimal adjustedValue;
+
+	@Column(name = "alliance_commission", precision = 15, scale = 3)
+	private BigDecimal allianceCommission;
+
+	@Column(name = "alliance_discount", precision = 15, scale = 3)
+	private BigDecimal allianceDiscount;
+
+	@Column(name = "alliance_request_date", nullable = false)
+	private Date allianceRequestDate;
+
+	@Column(name = "alliancerequest_flag", length = 3)
+	private String alliancerequestFlag;
+
+	@Column(name = "alliancesector_value", precision = 15, scale = 3)
+	private BigDecimal alliancesectorValue;
+
+	@Column(name = "arrival_date", length = 7)
+	private String arrivalDate;
+
+	@Column(name = "arrival_terminal", length = 5)
+	private String arrivalTerminal;
+
+	@Column(name = "arrival_time", length = 5)
+	private String arrivalTime;
+
+	@Column(name = "atbp_number", length = 2)
+	private String atbpNumber;
+
+	@Column(name = "atbp_value", length = 11)
+	private String atbpValue;
+
+	@Column(name = "audit_commission", nullable = false, precision = 15, scale = 3)
+	private BigDecimal auditCommission;
+
+	@Column(name = "audit_discount", nullable = false, precision = 15, scale = 3)
+	private BigDecimal auditDiscount;
+
+	@Column(name = "audit_fare", nullable = false, precision = 15, scale = 3)
+	private BigDecimal auditFare;
+
+	@Column(name = "audit_orc", nullable = false, precision = 15, scale = 3)
+	private BigDecimal auditOrc;
+
+	@Column(name = "batch_details", nullable = false, length = 100)
+	private String batchDetails;
+
+	@Column(name = "booking_status", length = 2)
+	private String bookingStatus;
+
+	@Column(name = "class_diff_value", length = 4)
+	private String classDiffValue;
+
+	@Column(name = "codeshare_cabin", length = 1)
+	private String codeshareCabin;
+
+	@Column(name = "codeshare_rbd", length = 2)
+	private String codeshareRbd;
+
+	@Column(name = "commission_amount", nullable = false, precision = 15, scale = 3)
+	private BigDecimal commissionAmount;
+
+	@Column(name = "coupon_arrival_day", length = 1)
+	private String couponArrivalDay;
+
+	@Column(name = "coupon_number", nullable = false, length = 1)
+	private String couponNumber;
+
+	@Column(name = "coupon_reference_number", precision = 15, scale = 3)
+	private BigDecimal couponReferenceNumber;
+
+	@Column(name = "created_by", nullable = false, length = 15)
+	private String createdBy;
+
+	@Column(name = "created_date", nullable = false)
+	private Timestamp createdDate;
+
+	@Column(name = "departure_terminal", length = 5)
+	private String departureTerminal;
+
+	@Column(name = "departure_time", length = 8)
+	private String departureTime;
+
+	@Column(name = "discount_amount", nullable = false, precision = 15, scale = 3)
+	private BigDecimal discountAmount;
+
+	@Column(name = "divergence_indicator", length = 1)
+	private String divergenceIndicator;
+
+	@Column(name = "dr_indicator", length = 1)
+	private String drIndicator;
+
+	@Column(name = "emd_attribute_group", length = 3)
+	private String emdAttributeGroup;
+
+	@Column(name = "emd_attribute_sub_group", length = 3)
+	private String emdAttributeSubGroup;
+
+	@Column(name = "emd_bagg_total_no_in_excs", length = 12)
+	private String emdBaggTotalNoInExcs;
+
+	@Column(name = "emd_consumed_at_issuance_ind", length = 1)
+	private String emdConsumedAtIssuanceInd;
+
+	@Column(name = "emd_coupon_value", precision = 15, scale = 3)
+	private BigDecimal emdCouponValue;
+
+	@Column(name = "emd_currency_type", length = 4)
+	private String emdCurrencyType;
+
+	@Column(name = "emd_excess_bagg_currency_code", length = 3)
+	private String emdExcessBaggCurrencyCode;
+
+	@Column(name = "emd_excess_bagg_rate_per_unit", length = 12)
+	private String emdExcessBaggRatePerUnit;
+
+	@Column(name = "emd_fee_owner_airline_design", length = 3)
+	private String emdFeeOwnerAirlineDesign;
+
+	@Column(name = "emd_industry_carrier_indicator", length = 1)
+	private String emdIndustryCarrierIndicator;
+
+	@Column(name = "emd_number_of_services", length = 3)
+	private String emdNumberOfServices;
+
+	@Column(name = "emd_operating_carrier", length = 3)
+	private String emdOperatingCarrier;
+
+	@Column(name = "emd_reason_for_issuance_subcde", length = 5)
+	private String emdReasonForIssuanceSubcde;
+
+	@Column(name = "emd_related_coupon_number", length = 1)
+	private String emdRelatedCouponNumber;
+
+	@Column(name = "emd_related_ticket_number", length = 15)
+	private String emdRelatedTicketNumber;
+
+	@Column(name = "emd_service_type", length = 1)
+	private String emdServiceType;
+
+	@Column(name = "emd_xcess_bagg_over_allow_qlfy", length = 1)
+	private String emdXcessBaggOverAllowQlfy;
+
+	@Column(name = "endorsement_indicator", nullable = false, length = 1)
+	private String endorsementIndicator;
+
+	@Column(name = "exg_rate_frm_atbp_to_base", length = 6)
+	private String exgRateFrmAtbpToBase;
+
+	@Column(name = "exg_rate_frm_atbp_to_bus_curr", length = 6)
+	private String exgRateFrmAtbpToBusCurr;
+
+	@Column(name = "exg_rate_frm_atbp_to_gbl_curr", length = 6)
+	private String exgRateFrmAtbpToGblCurr;
+
+	@Column(name = "exg_rate_frm_sales_to_base", length = 6)
+	private String exgRateFrmSalesToBase;
+
+	@Column(name = "exg_rate_frm_sales_to_bus_curr", length = 6)
+	private String exgRateFrmSalesToBusCurr;
+
+	@Column(name = "exg_rate_frm_sales_to_gbl_curr", length = 6)
+	private String exgRateFrmSalesToGblCurr;
+
+	@Column(name = "fare_basis", length = 15)
+	private String fareBasis;
+
+	@Column(name = "fare_component_number", length = 2)
+	private String fareComponentNumber;
+
+	@Column(name = "fare_component_value", length = 11)
+	private String fareComponentValue;
+
+	@Column(name = "ff_indicator", length = 1)
+	private String ffIndicator;
+
+	@Column(name = "ffy_isc_amount", precision = 15, scale = 3)
+	private BigDecimal ffyIscAmount;
+
+	@Column(name = "ffy_isc_percent", length = 6)
+	private String ffyIscPercent;
+
+	@Column(name = "ffy_mileage_amount", length = 4)
+	private String ffyMileageAmount;
+
+	@Column(name = "ffy_mileage_base_currency", length = 4)
+	private String ffyMileageBaseCurrency;
+
+	@Column(name = "final_process_month", nullable = false)
+	private int finalProcessMonth;
+
+	@Column(name = "final_quotient", precision = 15, scale = 3)
+	private BigDecimal finalQuotient;
+
+	@Column(name = "frequent_flyer_reference", length = 20)
+	private String frequentFlyerReference;
+
+	@Column(name = "from_airport", nullable = false, length = 5)
+	private String fromAirport;
+
+	@Column(name = "gcm", length = 10)
+	private String gcm;
+
+	@Column(name = "handling_fee_agreement_type", length = 1)
+	private String handlingFeeAgreementType;
+
+	@Column(name = "handling_fee_amount", precision = 15, scale = 3)
+	private BigDecimal handlingFeeAmount;
+
+	@Column(name = "handling_fee_base_currency", length = 4)
+	private String handlingFeeBaseCurrency;
+
+	@Column(name = "handling_fee_master_record", length = 10)
+	private String handlingFeeMasterRecord;
+
+	@Column(name = "handling_fee_percentage", length = 6)
+	private String handlingFeePercentage;
+
+	@Column(name = "industry_bi_lateral_isc_appld", length = 1)
+	private String industryBiLateralIscAppld;
+
+	@Column(name = "industry_cpbc", length = 6)
+	private String industryCpbc;
+
+	@Column(name = "industry_isc_percentage", length = 6)
+	private String industryIscPercentage;
+
+	@Column(name = "industry_isc_value", precision = 15, scale = 3)
+	private BigDecimal industryIscValue;
+
+	@Column(name = "industry_proc", length = 3)
+	private String industryProc;
+
+	@Column(name = "industry_prorate_value", precision = 15, scale = 3)
+	private BigDecimal industryProrateValue;
+
+	@Column(name = "industry_prot", length = 1)
+	private String industryProt;
+
+	@Column(name = "industry_uatp_amount", precision = 15, scale = 3)
+	private BigDecimal industryUatpAmount;
+
+	@Column(name = "industry_uatp_percentage", length = 5)
+	private String industryUatpPercentage;
+
+	@Column(name = "invol_flag", length = 1)
+	private String involFlag;
+
+	@Column(name = "last_updated_by", length = 15)
+	private String lastUpdatedBy;
+
+	@Column(name = "last_updated_date")
+	private Timestamp lastUpdatedDate;
+
+	@Column(name = "marketing_carrier_alpha_code", nullable = false, length = 3)
+	private String marketingCarrierAlphaCode;
+
+	@Column(name = "marketing_carrier_num_code", nullable = false, length = 4)
+	private String marketingCarrierNumCode;
+
+	@Column(name = "marketing_flight_date")
+	private Date marketingFlightDate;
+
+	@Column(name = "marketing_flight_number", length = 5)
+	private String marketingFlightNumber;
+
+	@Column(name = "mco_coupon_tax_value", precision = 15, scale = 3)
+	private BigDecimal mcoCouponTaxValue;
+
+	@Column(name = "mco_coupon_value", nullable = false, precision = 15, scale = 3)
+	private BigDecimal mcoCouponValue;
+
+	@Column(name = "mco_service_type", length = 10)
+	private String mcoServiceType;
+
+	@Column(name = "mpa_residual", precision = 15, scale = 3)
+	private BigDecimal mpaResidual;
+
+	@Column(name = "mpa_wo_own_proviso", length = 10)
+	private String mpaWoOwnProviso;
+
+	@Column(name = "mpr_percentage", length = 6)
+	private String mprPercentage;
+
+	@Column(name = "not_valid_after", length = 8)
+	private String notValidAfter;
+
+	@Column(name = "not_valid_before", length = 8)
+	private String notValidBefore;
+
+	@Column(name = "one_world_prorate_flag", length = 1)
+	private String oneWorldProrateFlag;
+
+	@Column(name = "one_world_prorate_value", precision = 15, scale = 3)
+	private BigDecimal oneWorldProrateValue;
+
+	@Column(name = "operating_carrier_alpha_code", length = 10)
+	private String operatingCarrierAlphaCode;
+
+	@Column(name = "operating_carrier_num_code", length = 10)
+	private String operatingCarrierNumCode;
+
+	@Column(name = "operating_flight_dept_date", length = 8)
+	private String operatingFlightDeptDate;
+
+	@Column(name = "operating_flight_number", length = 5)
+	private String operatingFlightNumber;
+
+	@Column(name = "orc_amount", nullable = false, precision = 15, scale = 3)
+	private BigDecimal orcAmount;
+
+	@Column(name = "other_differences", precision = 15, scale = 3)
+	private BigDecimal otherDifferences;
+
+	@Column(name = "planned_optg_cxr_alpha_code", length = 4)
+	private String plannedOptgCxrAlphaCode;
+
+	@Column(name = "planned_optg_cxr_num_code", length = 3)
+	private String plannedOptgCxrNumCode;
+
+	@Column(length = 3)
+	private String pot;
+
+	@Column(name = "present_to", length = 86)
+	private String presentTo;
+
+	@Column(name = "processing_date_and_time", nullable = false)
+	private Date processingDateAndTime;
+
+	@Column(name = "prorate_factor", length = 10)
+	private String prorateFactor;
+
+	@Column(name = "provisional_process_month")
+	private int provisionalProcessMonth;
+
+	@Column(name = "proviso_value", precision = 15, scale = 3)
+	private BigDecimal provisoValue;
+
+	@Column(name = "response_date")
+	private Date responseDate;
+
+	@Column(name = "response_level_type", length = 1)
+	private String responseLevelType;
+
+	@Column(name = "sector_fare_amount", nullable = false, precision = 15, scale = 3)
+	private BigDecimal sectorFareAmount;
+
+	@Column(name = "sector_number", nullable = false)
+	private Integer sectorNumber;
+
+	@Column(name = "settlement_cpbc", length = 4)
+	private String settlementCpbc;
+
+	@Column(name = "settlement_isc_percentage", length = 6)
+	private String settlementIscPercentage;
+
+	@Column(name = "settlement_isc_value", precision = 15, scale = 3)
+	private BigDecimal settlementIscValue;
+
+	@Column(name = "settlement_proc", length = 3)
+	private String settlementProc;
+
+	@Column(name = "settlement_prorate_value", precision = 15, scale = 3)
+	private BigDecimal settlementProrateValue;
+
+	@Column(name = "settlement_prot", length = 1)
+	private String settlementProt;
+
+	@Column(name = "settlement_uatp_amount", length = 10)
+	private String settlementUatpAmount;
+
+	@Column(name = "settlement_uatp_percentage", length = 11)
+	private String settlementUatpPercentage;
+
+	@Column(name = "side_trip", length = 1)
+	private String sideTrip;
+
+	@Column(name = "sirs_rate", length = 6)
+	private String sirsRate;
+
+	@Column(name = "spa_residual", precision = 15, scale = 3)
+	private BigDecimal spaResidual;
+
+	@Column(name = "spa_value", precision = 15, scale = 3)
+	private BigDecimal spaValue;
+
+	@Column(name = "srp_method", length = 3)
+	private String srpMethod;
+
+	@Column(name = "srp_value", length = 4)
+	private String srpValue;
+
+	@Column(name = "stopover_ind", length = 1)
+	private String stopoverInd;
+
+	@Column(name = "super_commission_currency", length = 4)
+	private String superCommissionCurrency;
+
+	@Column(name = "super_commission_master_record", length = 10)
+	private String superCommissionMasterRecord;
+
+	@Column(name = "super_commission_percentage", length = 6)
+	private String superCommissionPercentage;
+
+	@Column(name = "super_commission_type", length = 1)
+	private String superCommissionType;
+
+	@Column(name = "super_commission_value", precision = 15, scale = 3)
+	private BigDecimal superCommissionValue;
+
+	@Column(name = "surcharge_value", precision = 15, scale = 3)
+	private BigDecimal surchargeValue;
+
+	@Column(name = "tax_value", precision = 15, scale = 3)
+	private BigDecimal taxValue;
+
+	@Column(name = "thru_change_of_gauge_indicator", length = 1)
+	private String thruChangeOfGaugeIndicator;
+
+	@Column(name = "ticketed_cabin", length = 1)
+	private String ticketedCabin;
+
+	@Column(name = "ticketed_rbd", nullable = false, length = 2)
+	private String ticketedRbd;
+
+	@Column(name = "to_airport", nullable = false, length = 5)
+	private String toAirport;
+
+	@Column(length = 10)
+	private String tpm;
+
+	@Column(name = "trans_ocean", length = 1)
+	private String transOcean;
+
+	@Column(name = "type_of_isc_clearing_house", length = 1)
+	private String typeOfIscClearingHouse;
+
+	@Column(name = "uatp_discount_type", length = 1)
+	private String uatpDiscountType;
+
+	@Column(name = "uatp_master_record", length = 10)
+	private String uatpMasterRecord;
+
+	@Column(name = "util_type", length = 1)
+	private String utilType;
+
+	@Column(name = "yqyr_residual", precision = 15, scale = 3)
+	private BigDecimal yqyrResidual;
+
+	@Column(name = "yqyr_tax_as_surcharge", precision = 15, scale = 3)
+	private BigDecimal yqyrTaxAsSurcharge;
+
+	@Column(name = "yqyr_tax_in_usd", precision = 15, scale = 3)
+	private BigDecimal yqyrTaxInUsd;
+
+	public TicketCoupon() {
+	}
+
+	public int getTrnTktCpnId() {
+		return this.trnTktCpnId;
+	}
+
+	public void setTrnTktCpnId(int trnTktCpnId) {
+		this.trnTktCpnId = trnTktCpnId;
+	}
+
+	public String getAchFactor() {
+		return this.achFactor;
+	}
+
+	public void setAchFactor(String achFactor) {
+		this.achFactor = achFactor;
+	}
+
+	public BigDecimal getAchHighYFareAmount() {
+		return this.achHighYFareAmount;
+	}
+
+	public void setAchHighYFareAmount(BigDecimal achHighYFareAmount) {
+		this.achHighYFareAmount = achHighYFareAmount;
+	}
+
+	public String getAchHighYFareCurrency() {
+		return this.achHighYFareCurrency;
+	}
+
+	public void setAchHighYFareCurrency(String achHighYFareCurrency) {
+		this.achHighYFareCurrency = achHighYFareCurrency;
+	}
+
+	public String getAchHighYFareDetails() {
+		return this.achHighYFareDetails;
+	}
+
+	public void setAchHighYFareDetails(String achHighYFareDetails) {
+		this.achHighYFareDetails = achHighYFareDetails;
+	}
+
+	public BigDecimal getAdditionalCommission() {
+		return this.additionalCommission;
+	}
+
+	public void setAdditionalCommission(BigDecimal additionalCommission) {
+		this.additionalCommission = additionalCommission;
+	}
+
+	public BigDecimal getAdjustedValue() {
+		return this.adjustedValue;
+	}
+
+	public void setAdjustedValue(BigDecimal adjustedValue) {
+		this.adjustedValue = adjustedValue;
+	}
+
+	public BigDecimal getAllianceCommission() {
+		return this.allianceCommission;
+	}
+
+	public void setAllianceCommission(BigDecimal allianceCommission) {
+		this.allianceCommission = allianceCommission;
+	}
+
+	public BigDecimal getAllianceDiscount() {
+		return this.allianceDiscount;
+	}
+
+	public void setAllianceDiscount(BigDecimal allianceDiscount) {
+		this.allianceDiscount = allianceDiscount;
+	}
+
+	public Date getAllianceRequestDate() {
+		return allianceRequestDate;
+	}
+
+	public void setAllianceRequestDate(Date allianceRequestDate) {
+		this.allianceRequestDate = allianceRequestDate;
+	}
+
+	public String getAlliancerequestFlag() {
+		return this.alliancerequestFlag;
+	}
+
+	public void setAlliancerequestFlag(String alliancerequestFlag) {
+		this.alliancerequestFlag = alliancerequestFlag;
+	}
+
+	public BigDecimal getAlliancesectorValue() {
+		return this.alliancesectorValue;
+	}
+
+	public void setAlliancesectorValue(BigDecimal alliancesectorValue) {
+		this.alliancesectorValue = alliancesectorValue;
+	}
+
+	public String getArrivalDate() {
+		return this.arrivalDate;
+	}
+
+	public void setArrivalDate(String arrivalDate) {
+		this.arrivalDate = arrivalDate;
+	}
+
+	public String getArrivalTerminal() {
+		return this.arrivalTerminal;
+	}
+
+	public void setArrivalTerminal(String arrivalTerminal) {
+		this.arrivalTerminal = arrivalTerminal;
+	}
+
+	public String getArrivalTime() {
+		return this.arrivalTime;
+	}
+
+	public void setArrivalTime(String arrivalTime) {
+		this.arrivalTime = arrivalTime;
+	}
+
+	public String getAtbpNumber() {
+		return this.atbpNumber;
+	}
+
+	public void setAtbpNumber(String atbpNumber) {
+		this.atbpNumber = atbpNumber;
+	}
+
+	public String getAtbpValue() {
+		return this.atbpValue;
+	}
+
+	public void setAtbpValue(String atbpValue) {
+		this.atbpValue = atbpValue;
+	}
+
+	public BigDecimal getAuditCommission() {
+		return this.auditCommission;
+	}
+
+	public void setAuditCommission(BigDecimal auditCommission) {
+		this.auditCommission = auditCommission;
+	}
+
+	public BigDecimal getAuditDiscount() {
+		return this.auditDiscount;
+	}
+
+	public void setAuditDiscount(BigDecimal auditDiscount) {
+		this.auditDiscount = auditDiscount;
+	}
+
+	public BigDecimal getAuditFare() {
+		return this.auditFare;
+	}
+
+	public void setAuditFare(BigDecimal auditFare) {
+		this.auditFare = auditFare;
+	}
+
+	public BigDecimal getAuditOrc() {
+		return this.auditOrc;
+	}
+
+	public void setAuditOrc(BigDecimal auditOrc) {
+		this.auditOrc = auditOrc;
+	}
+
+	public String getBatchDetails() {
+		return this.batchDetails;
+	}
+
+	public void setBatchDetails(String batchDetails) {
+		this.batchDetails = batchDetails;
+	}
+
+	public String getBookingStatus() {
+		return this.bookingStatus;
+	}
+
+	public void setBookingStatus(String bookingStatus) {
+		this.bookingStatus = bookingStatus;
+	}
+
+	public String getClassDiffValue() {
+		return this.classDiffValue;
+	}
+
+	public void setClassDiffValue(String classDiffValue) {
+		this.classDiffValue = classDiffValue;
+	}
+
+	public String getCodeshareCabin() {
+		return this.codeshareCabin;
+	}
+
+	public void setCodeshareCabin(String codeshareCabin) {
+		this.codeshareCabin = codeshareCabin;
+	}
+
+	public String getCodeshareRbd() {
+		return this.codeshareRbd;
+	}
+
+	public void setCodeshareRbd(String codeshareRbd) {
+		this.codeshareRbd = codeshareRbd;
+	}
+
+	public BigDecimal getCommissionAmount() {
+		return this.commissionAmount;
+	}
+
+	public void setCommissionAmount(BigDecimal commissionAmount) {
+		this.commissionAmount = commissionAmount;
+	}
+
+	public String getCouponArrivalDay() {
+		return this.couponArrivalDay;
+	}
+
+	public void setCouponArrivalDay(String couponArrivalDay) {
+		this.couponArrivalDay = couponArrivalDay;
+	}
+
+	public String getCouponNumber() {
+		return this.couponNumber;
+	}
+
+	public void setCouponNumber(String couponNumber) {
+		this.couponNumber = couponNumber;
+	}
+
+	public BigDecimal getCouponReferenceNumber() {
+		return this.couponReferenceNumber;
+	}
+
+	public void setCouponReferenceNumber(BigDecimal couponReferenceNumber) {
+		this.couponReferenceNumber = couponReferenceNumber;
+	}
+
+	public String getCreatedBy() {
+		return this.createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public Timestamp getCreatedDate() {
+		return this.createdDate;
+	}
+
+	public void setCreatedDate(Timestamp createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public String getDepartureTerminal() {
+		return this.departureTerminal;
+	}
+
+	public void setDepartureTerminal(String departureTerminal) {
+		this.departureTerminal = departureTerminal;
+	}
+
+	public String getDepartureTime() {
+		return this.departureTime;
+	}
+
+	public void setDepartureTime(String departureTime) {
+		this.departureTime = departureTime;
+	}
+
+	public BigDecimal getDiscountAmount() {
+		return this.discountAmount;
+	}
+
+	public void setDiscountAmount(BigDecimal discountAmount) {
+		this.discountAmount = discountAmount;
+	}
+
+	public String getDivergenceIndicator() {
+		return this.divergenceIndicator;
+	}
+
+	public void setDivergenceIndicator(String divergenceIndicator) {
+		this.divergenceIndicator = divergenceIndicator;
+	}
+
+	public String getDrIndicator() {
+		return this.drIndicator;
+	}
+
+	public void setDrIndicator(String drIndicator) {
+		this.drIndicator = drIndicator;
+	}
+
+	public String getEmdAttributeGroup() {
+		return this.emdAttributeGroup;
+	}
+
+	public void setEmdAttributeGroup(String emdAttributeGroup) {
+		this.emdAttributeGroup = emdAttributeGroup;
+	}
+
+	public String getEmdAttributeSubGroup() {
+		return this.emdAttributeSubGroup;
+	}
+
+	public void setEmdAttributeSubGroup(String emdAttributeSubGroup) {
+		this.emdAttributeSubGroup = emdAttributeSubGroup;
+	}
+
+	public String getEmdBaggTotalNoInExcs() {
+		return this.emdBaggTotalNoInExcs;
+	}
+
+	public void setEmdBaggTotalNoInExcs(String emdBaggTotalNoInExcs) {
+		this.emdBaggTotalNoInExcs = emdBaggTotalNoInExcs;
+	}
+
+	public String getEmdConsumedAtIssuanceInd() {
+		return this.emdConsumedAtIssuanceInd;
+	}
+
+	public void setEmdConsumedAtIssuanceInd(String emdConsumedAtIssuanceInd) {
+		this.emdConsumedAtIssuanceInd = emdConsumedAtIssuanceInd;
+	}
+
+	public BigDecimal getEmdCouponValue() {
+		return this.emdCouponValue;
+	}
+
+	public void setEmdCouponValue(BigDecimal emdCouponValue) {
+		this.emdCouponValue = emdCouponValue;
+	}
+
+	public String getEmdCurrencyType() {
+		return this.emdCurrencyType;
+	}
+
+	public void setEmdCurrencyType(String emdCurrencyType) {
+		this.emdCurrencyType = emdCurrencyType;
+	}
+
+	public String getEmdExcessBaggCurrencyCode() {
+		return this.emdExcessBaggCurrencyCode;
+	}
+
+	public void setEmdExcessBaggCurrencyCode(String emdExcessBaggCurrencyCode) {
+		this.emdExcessBaggCurrencyCode = emdExcessBaggCurrencyCode;
+	}
+
+	public String getEmdExcessBaggRatePerUnit() {
+		return this.emdExcessBaggRatePerUnit;
+	}
+
+	public void setEmdExcessBaggRatePerUnit(String emdExcessBaggRatePerUnit) {
+		this.emdExcessBaggRatePerUnit = emdExcessBaggRatePerUnit;
+	}
+
+	public String getEmdFeeOwnerAirlineDesign() {
+		return this.emdFeeOwnerAirlineDesign;
+	}
+
+	public void setEmdFeeOwnerAirlineDesign(String emdFeeOwnerAirlineDesign) {
+		this.emdFeeOwnerAirlineDesign = emdFeeOwnerAirlineDesign;
+	}
+
+	public String getEmdIndustryCarrierIndicator() {
+		return this.emdIndustryCarrierIndicator;
+	}
+
+	public void setEmdIndustryCarrierIndicator(String emdIndustryCarrierIndicator) {
+		this.emdIndustryCarrierIndicator = emdIndustryCarrierIndicator;
+	}
+
+	public String getEmdNumberOfServices() {
+		return this.emdNumberOfServices;
+	}
+
+	public void setEmdNumberOfServices(String emdNumberOfServices) {
+		this.emdNumberOfServices = emdNumberOfServices;
+	}
+
+	public String getEmdOperatingCarrier() {
+		return this.emdOperatingCarrier;
+	}
+
+	public void setEmdOperatingCarrier(String emdOperatingCarrier) {
+		this.emdOperatingCarrier = emdOperatingCarrier;
+	}
+
+	public String getEmdReasonForIssuanceSubcde() {
+		return this.emdReasonForIssuanceSubcde;
+	}
+
+	public void setEmdReasonForIssuanceSubcde(String emdReasonForIssuanceSubcde) {
+		this.emdReasonForIssuanceSubcde = emdReasonForIssuanceSubcde;
+	}
+
+	public String getEmdRelatedCouponNumber() {
+		return this.emdRelatedCouponNumber;
+	}
+
+	public void setEmdRelatedCouponNumber(String emdRelatedCouponNumber) {
+		this.emdRelatedCouponNumber = emdRelatedCouponNumber;
+	}
+
+	public String getEmdRelatedTicketNumber() {
+		return this.emdRelatedTicketNumber;
+	}
+
+	public void setEmdRelatedTicketNumber(String emdRelatedTicketNumber) {
+		this.emdRelatedTicketNumber = emdRelatedTicketNumber;
+	}
+
+	public String getEmdServiceType() {
+		return this.emdServiceType;
+	}
+
+	public void setEmdServiceType(String emdServiceType) {
+		this.emdServiceType = emdServiceType;
+	}
+
+	public String getEmdXcessBaggOverAllowQlfy() {
+		return this.emdXcessBaggOverAllowQlfy;
+	}
+
+	public void setEmdXcessBaggOverAllowQlfy(String emdXcessBaggOverAllowQlfy) {
+		this.emdXcessBaggOverAllowQlfy = emdXcessBaggOverAllowQlfy;
+	}
+
+	public String getEndorsementIndicator() {
+		return this.endorsementIndicator;
+	}
+
+	public void setEndorsementIndicator(String endorsementIndicator) {
+		this.endorsementIndicator = endorsementIndicator;
+	}
+
+	public String getExgRateFrmAtbpToBase() {
+		return this.exgRateFrmAtbpToBase;
+	}
+
+	public void setExgRateFrmAtbpToBase(String exgRateFrmAtbpToBase) {
+		this.exgRateFrmAtbpToBase = exgRateFrmAtbpToBase;
+	}
+
+	public String getExgRateFrmAtbpToBusCurr() {
+		return this.exgRateFrmAtbpToBusCurr;
+	}
+
+	public void setExgRateFrmAtbpToBusCurr(String exgRateFrmAtbpToBusCurr) {
+		this.exgRateFrmAtbpToBusCurr = exgRateFrmAtbpToBusCurr;
+	}
+
+	public String getExgRateFrmAtbpToGblCurr() {
+		return this.exgRateFrmAtbpToGblCurr;
+	}
+
+	public void setExgRateFrmAtbpToGblCurr(String exgRateFrmAtbpToGblCurr) {
+		this.exgRateFrmAtbpToGblCurr = exgRateFrmAtbpToGblCurr;
+	}
+
+	public String getExgRateFrmSalesToBase() {
+		return this.exgRateFrmSalesToBase;
+	}
+
+	public void setExgRateFrmSalesToBase(String exgRateFrmSalesToBase) {
+		this.exgRateFrmSalesToBase = exgRateFrmSalesToBase;
+	}
+
+	public String getExgRateFrmSalesToBusCurr() {
+		return this.exgRateFrmSalesToBusCurr;
+	}
+
+	public void setExgRateFrmSalesToBusCurr(String exgRateFrmSalesToBusCurr) {
+		this.exgRateFrmSalesToBusCurr = exgRateFrmSalesToBusCurr;
+	}
+
+	public String getExgRateFrmSalesToGblCurr() {
+		return this.exgRateFrmSalesToGblCurr;
+	}
+
+	public void setExgRateFrmSalesToGblCurr(String exgRateFrmSalesToGblCurr) {
+		this.exgRateFrmSalesToGblCurr = exgRateFrmSalesToGblCurr;
+	}
+
+	public String getFareBasis() {
+		return this.fareBasis;
+	}
+
+	public void setFareBasis(String fareBasis) {
+		this.fareBasis = fareBasis;
+	}
+
+	public String getFareComponentNumber() {
+		return this.fareComponentNumber;
+	}
+
+	public void setFareComponentNumber(String fareComponentNumber) {
+		this.fareComponentNumber = fareComponentNumber;
+	}
+
+	public String getFareComponentValue() {
+		return this.fareComponentValue;
+	}
+
+	public void setFareComponentValue(String fareComponentValue) {
+		this.fareComponentValue = fareComponentValue;
+	}
+
+	public String getFfIndicator() {
+		return this.ffIndicator;
+	}
+
+	public void setFfIndicator(String ffIndicator) {
+		this.ffIndicator = ffIndicator;
+	}
+
+	public BigDecimal getFfyIscAmount() {
+		return this.ffyIscAmount;
+	}
+
+	public void setFfyIscAmount(BigDecimal ffyIscAmount) {
+		this.ffyIscAmount = ffyIscAmount;
+	}
+
+	public String getFfyIscPercent() {
+		return this.ffyIscPercent;
+	}
+
+	public void setFfyIscPercent(String ffyIscPercent) {
+		this.ffyIscPercent = ffyIscPercent;
+	}
+
+	public String getFfyMileageAmount() {
+		return this.ffyMileageAmount;
+	}
+
+	public void setFfyMileageAmount(String ffyMileageAmount) {
+		this.ffyMileageAmount = ffyMileageAmount;
+	}
+
+	public String getFfyMileageBaseCurrency() {
+		return this.ffyMileageBaseCurrency;
+	}
+
+	public void setFfyMileageBaseCurrency(String ffyMileageBaseCurrency) {
+		this.ffyMileageBaseCurrency = ffyMileageBaseCurrency;
+	}
+
+	public int getFinalProcessMonth() {
+		return this.finalProcessMonth;
+	}
+
+	public void setFinalProcessMonth(int finalProcessMonth) {
+		this.finalProcessMonth = finalProcessMonth;
+	}
+
+	public BigDecimal getFinalQuotient() {
+		return this.finalQuotient;
+	}
+
+	public void setFinalQuotient(BigDecimal finalQuotient) {
+		this.finalQuotient = finalQuotient;
+	}
+
+	public String getFrequentFlyerReference() {
+		return this.frequentFlyerReference;
+	}
+
+	public void setFrequentFlyerReference(String frequentFlyerReference) {
+		this.frequentFlyerReference = frequentFlyerReference;
+	}
+
+	public String getFromAirport() {
+		return this.fromAirport;
+	}
+
+	public void setFromAirport(String fromAirport) {
+		this.fromAirport = fromAirport;
+	}
+
+	public String getGcm() {
+		return this.gcm;
+	}
+
+	public void setGcm(String gcm) {
+		this.gcm = gcm;
+	}
+
+	public String getHandlingFeeAgreementType() {
+		return this.handlingFeeAgreementType;
+	}
+
+	public void setHandlingFeeAgreementType(String handlingFeeAgreementType) {
+		this.handlingFeeAgreementType = handlingFeeAgreementType;
+	}
+
+	public BigDecimal getHandlingFeeAmount() {
+		return this.handlingFeeAmount;
+	}
+
+	public void setHandlingFeeAmount(BigDecimal handlingFeeAmount) {
+		this.handlingFeeAmount = handlingFeeAmount;
+	}
+
+	public String getHandlingFeeBaseCurrency() {
+		return this.handlingFeeBaseCurrency;
+	}
+
+	public void setHandlingFeeBaseCurrency(String handlingFeeBaseCurrency) {
+		this.handlingFeeBaseCurrency = handlingFeeBaseCurrency;
+	}
+
+	public String getHandlingFeeMasterRecord() {
+		return this.handlingFeeMasterRecord;
+	}
+
+	public void setHandlingFeeMasterRecord(String handlingFeeMasterRecord) {
+		this.handlingFeeMasterRecord = handlingFeeMasterRecord;
+	}
+
+	public String getHandlingFeePercentage() {
+		return this.handlingFeePercentage;
+	}
+
+	public void setHandlingFeePercentage(String handlingFeePercentage) {
+		this.handlingFeePercentage = handlingFeePercentage;
+	}
+
+	public String getIndustryBiLateralIscAppld() {
+		return this.industryBiLateralIscAppld;
+	}
+
+	public void setIndustryBiLateralIscAppld(String industryBiLateralIscAppld) {
+		this.industryBiLateralIscAppld = industryBiLateralIscAppld;
+	}
+
+	public String getIndustryCpbc() {
+		return this.industryCpbc;
+	}
+
+	public void setIndustryCpbc(String industryCpbc) {
+		this.industryCpbc = industryCpbc;
+	}
+
+	public String getIndustryIscPercentage() {
+		return this.industryIscPercentage;
+	}
+
+	public void setIndustryIscPercentage(String industryIscPercentage) {
+		this.industryIscPercentage = industryIscPercentage;
+	}
+
+	public BigDecimal getIndustryIscValue() {
+		return this.industryIscValue;
+	}
+
+	public void setIndustryIscValue(BigDecimal industryIscValue) {
+		this.industryIscValue = industryIscValue;
+	}
+
+	public String getIndustryProc() {
+		return this.industryProc;
+	}
+
+	public void setIndustryProc(String industryProc) {
+		this.industryProc = industryProc;
+	}
+
+	public BigDecimal getIndustryProrateValue() {
+		return this.industryProrateValue;
+	}
+
+	public void setIndustryProrateValue(BigDecimal industryProrateValue) {
+		this.industryProrateValue = industryProrateValue;
+	}
+
+	public String getIndustryProt() {
+		return this.industryProt;
+	}
+
+	public void setIndustryProt(String industryProt) {
+		this.industryProt = industryProt;
+	}
+
+	public BigDecimal getIndustryUatpAmount() {
+		return this.industryUatpAmount;
+	}
+
+	public void setIndustryUatpAmount(BigDecimal industryUatpAmount) {
+		this.industryUatpAmount = industryUatpAmount;
+	}
+
+	public String getIndustryUatpPercentage() {
+		return this.industryUatpPercentage;
+	}
+
+	public void setIndustryUatpPercentage(String industryUatpPercentage) {
+		this.industryUatpPercentage = industryUatpPercentage;
+	}
+
+	public String getInvolFlag() {
+		return this.involFlag;
+	}
+
+	public void setInvolFlag(String involFlag) {
+		this.involFlag = involFlag;
+	}
+
+	public String getLastUpdatedBy() {
+		return this.lastUpdatedBy;
+	}
+
+	public void setLastUpdatedBy(String lastUpdatedBy) {
+		this.lastUpdatedBy = lastUpdatedBy;
+	}
+
+	public Timestamp getLastUpdatedDate() {
+		return this.lastUpdatedDate;
+	}
+
+	public void setLastUpdatedDate(Timestamp lastUpdatedDate) {
+		this.lastUpdatedDate = lastUpdatedDate;
+	}
+
+	public String getMarketingCarrierAlphaCode() {
+		return this.marketingCarrierAlphaCode;
+	}
+
+	public void setMarketingCarrierAlphaCode(String marketingCarrierAlphaCode) {
+		this.marketingCarrierAlphaCode = marketingCarrierAlphaCode;
+	}
+
+	public String getMarketingCarrierNumCode() {
+		return this.marketingCarrierNumCode;
+	}
+
+	public void setMarketingCarrierNumCode(String marketingCarrierNumCode) {
+		this.marketingCarrierNumCode = marketingCarrierNumCode;
+	}
+
+	public Date getMarketingFlightDate() {
+		return marketingFlightDate;
+	}
+
+	public void setMarketingFlightDate(Date marketingFlightDate) {
+		this.marketingFlightDate = marketingFlightDate;
+	}
+
+	public String getMarketingFlightNumber() {
+		return this.marketingFlightNumber;
+	}
+
+	public void setMarketingFlightNumber(String marketingFlightNumber) {
+		this.marketingFlightNumber = marketingFlightNumber;
+	}
+
+	public BigDecimal getMcoCouponTaxValue() {
+		return this.mcoCouponTaxValue;
+	}
+
+	public void setMcoCouponTaxValue(BigDecimal mcoCouponTaxValue) {
+		this.mcoCouponTaxValue = mcoCouponTaxValue;
+	}
+
+	public BigDecimal getMcoCouponValue() {
+		return this.mcoCouponValue;
+	}
+
+	public void setMcoCouponValue(BigDecimal mcoCouponValue) {
+		this.mcoCouponValue = mcoCouponValue;
+	}
+
+	public String getMcoServiceType() {
+		return this.mcoServiceType;
+	}
+
+	public void setMcoServiceType(String mcoServiceType) {
+		this.mcoServiceType = mcoServiceType;
+	}
+
+	public BigDecimal getMpaResidual() {
+		return this.mpaResidual;
+	}
+
+	public void setMpaResidual(BigDecimal mpaResidual) {
+		this.mpaResidual = mpaResidual;
+	}
+
+	public String getMpaWoOwnProviso() {
+		return this.mpaWoOwnProviso;
+	}
+
+	public void setMpaWoOwnProviso(String mpaWoOwnProviso) {
+		this.mpaWoOwnProviso = mpaWoOwnProviso;
+	}
+
+	public String getMprPercentage() {
+		return this.mprPercentage;
+	}
+
+	public void setMprPercentage(String mprPercentage) {
+		this.mprPercentage = mprPercentage;
+	}
+
+	public String getNotValidAfter() {
+		return this.notValidAfter;
+	}
+
+	public void setNotValidAfter(String notValidAfter) {
+		this.notValidAfter = notValidAfter;
+	}
+
+	public String getNotValidBefore() {
+		return this.notValidBefore;
+	}
+
+	public void setNotValidBefore(String notValidBefore) {
+		this.notValidBefore = notValidBefore;
+	}
+
+	public String getOneWorldProrateFlag() {
+		return this.oneWorldProrateFlag;
+	}
+
+	public void setOneWorldProrateFlag(String oneWorldProrateFlag) {
+		this.oneWorldProrateFlag = oneWorldProrateFlag;
+	}
+
+	public BigDecimal getOneWorldProrateValue() {
+		return this.oneWorldProrateValue;
+	}
+
+	public void setOneWorldProrateValue(BigDecimal oneWorldProrateValue) {
+		this.oneWorldProrateValue = oneWorldProrateValue;
+	}
+
+	public String getOperatingCarrierAlphaCode() {
+		return this.operatingCarrierAlphaCode;
+	}
+
+	public void setOperatingCarrierAlphaCode(String operatingCarrierAlphaCode) {
+		this.operatingCarrierAlphaCode = operatingCarrierAlphaCode;
+	}
+
+	public String getOperatingCarrierNumCode() {
+		return this.operatingCarrierNumCode;
+	}
+
+	public void setOperatingCarrierNumCode(String operatingCarrierNumCode) {
+		this.operatingCarrierNumCode = operatingCarrierNumCode;
+	}
+
+	public String getOperatingFlightDeptDate() {
+		return this.operatingFlightDeptDate;
+	}
+
+	public void setOperatingFlightDeptDate(String operatingFlightDeptDate) {
+		this.operatingFlightDeptDate = operatingFlightDeptDate;
+	}
+
+	public String getOperatingFlightNumber() {
+		return this.operatingFlightNumber;
+	}
+
+	public void setOperatingFlightNumber(String operatingFlightNumber) {
+		this.operatingFlightNumber = operatingFlightNumber;
+	}
+
+	public BigDecimal getOrcAmount() {
+		return this.orcAmount;
+	}
+
+	public void setOrcAmount(BigDecimal orcAmount) {
+		this.orcAmount = orcAmount;
+	}
+
+	public BigDecimal getOtherDifferences() {
+		return this.otherDifferences;
+	}
+
+	public void setOtherDifferences(BigDecimal otherDifferences) {
+		this.otherDifferences = otherDifferences;
+	}
+
+	public String getPlannedOptgCxrAlphaCode() {
+		return this.plannedOptgCxrAlphaCode;
+	}
+
+	public void setPlannedOptgCxrAlphaCode(String plannedOptgCxrAlphaCode) {
+		this.plannedOptgCxrAlphaCode = plannedOptgCxrAlphaCode;
+	}
+
+	public String getPlannedOptgCxrNumCode() {
+		return this.plannedOptgCxrNumCode;
+	}
+
+	public void setPlannedOptgCxrNumCode(String plannedOptgCxrNumCode) {
+		this.plannedOptgCxrNumCode = plannedOptgCxrNumCode;
+	}
+
+	public String getPot() {
+		return this.pot;
+	}
+
+	public void setPot(String pot) {
+		this.pot = pot;
+	}
+
+	public String getPresentTo() {
+		return this.presentTo;
+	}
+
+	public void setPresentTo(String presentTo) {
+		this.presentTo = presentTo;
+	}
+
+	public Date getProcessingDateAndTime() {
+		return processingDateAndTime;
+	}
+
+	public void setProcessingDateAndTime(Date processingDateAndTime) {
+		this.processingDateAndTime = processingDateAndTime;
+	}
+
+	public String getProrateFactor() {
+		return this.prorateFactor;
+	}
+
+	public void setProrateFactor(String prorateFactor) {
+		this.prorateFactor = prorateFactor;
+	}
+
+	public int getProvisionalProcessMonth() {
+		return this.provisionalProcessMonth;
+	}
+
+	public void setProvisionalProcessMonth(int provisionalProcessMonth) {
+		this.provisionalProcessMonth = provisionalProcessMonth;
+	}
+
+	public BigDecimal getProvisoValue() {
+		return this.provisoValue;
+	}
+
+	public void setProvisoValue(BigDecimal provisoValue) {
+		this.provisoValue = provisoValue;
+	}
+
+	public Date getResponseDate() {
+		return responseDate;
+	}
+
+	public void setResponseDate(Date responseDate) {
+		this.responseDate = responseDate;
+	}
+
+	public String getResponseLevelType() {
+		return this.responseLevelType;
+	}
+
+	public void setResponseLevelType(String responseLevelType) {
+		this.responseLevelType = responseLevelType;
+	}
+
+	public BigDecimal getSectorFareAmount() {
+		return this.sectorFareAmount;
+	}
+
+	public void setSectorFareAmount(BigDecimal sectorFareAmount) {
+		this.sectorFareAmount = sectorFareAmount;
+	}
+
+	public Integer getSectorNumber() {
+		return sectorNumber;
+	}
+
+	public void setSectorNumber(Integer sectorNumber) {
+		this.sectorNumber = sectorNumber;
+	}
+
+	public String getSettlementCpbc() {
+		return this.settlementCpbc;
+	}
+
+	public void setSettlementCpbc(String settlementCpbc) {
+		this.settlementCpbc = settlementCpbc;
+	}
+
+	public String getSettlementIscPercentage() {
+		return this.settlementIscPercentage;
+	}
+
+	public void setSettlementIscPercentage(String settlementIscPercentage) {
+		this.settlementIscPercentage = settlementIscPercentage;
+	}
+
+	public BigDecimal getSettlementIscValue() {
+		return this.settlementIscValue;
+	}
+
+	public void setSettlementIscValue(BigDecimal settlementIscValue) {
+		this.settlementIscValue = settlementIscValue;
+	}
+
+	public String getSettlementProc() {
+		return this.settlementProc;
+	}
+
+	public void setSettlementProc(String settlementProc) {
+		this.settlementProc = settlementProc;
+	}
+
+	public BigDecimal getSettlementProrateValue() {
+		return this.settlementProrateValue;
+	}
+
+	public void setSettlementProrateValue(BigDecimal settlementProrateValue) {
+		this.settlementProrateValue = settlementProrateValue;
+	}
+
+	public String getSettlementProt() {
+		return this.settlementProt;
+	}
+
+	public void setSettlementProt(String settlementProt) {
+		this.settlementProt = settlementProt;
+	}
+
+	public String getSettlementUatpAmount() {
+		return this.settlementUatpAmount;
+	}
+
+	public void setSettlementUatpAmount(String settlementUatpAmount) {
+		this.settlementUatpAmount = settlementUatpAmount;
+	}
+
+	public String getSettlementUatpPercentage() {
+		return this.settlementUatpPercentage;
+	}
+
+	public void setSettlementUatpPercentage(String settlementUatpPercentage) {
+		this.settlementUatpPercentage = settlementUatpPercentage;
+	}
+
+	public String getSideTrip() {
+		return this.sideTrip;
+	}
+
+	public void setSideTrip(String sideTrip) {
+		this.sideTrip = sideTrip;
+	}
+
+	public String getSirsRate() {
+		return this.sirsRate;
+	}
+
+	public void setSirsRate(String sirsRate) {
+		this.sirsRate = sirsRate;
+	}
+
+	public BigDecimal getSpaResidual() {
+		return this.spaResidual;
+	}
+
+	public void setSpaResidual(BigDecimal spaResidual) {
+		this.spaResidual = spaResidual;
+	}
+
+	public BigDecimal getSpaValue() {
+		return this.spaValue;
+	}
+
+	public void setSpaValue(BigDecimal spaValue) {
+		this.spaValue = spaValue;
+	}
+
+	public String getSrpMethod() {
+		return this.srpMethod;
+	}
+
+	public void setSrpMethod(String srpMethod) {
+		this.srpMethod = srpMethod;
+	}
+
+	public String getSrpValue() {
+		return this.srpValue;
+	}
+
+	public void setSrpValue(String srpValue) {
+		this.srpValue = srpValue;
+	}
+
+	public String getStopoverInd() {
+		return this.stopoverInd;
+	}
+
+	public void setStopoverInd(String stopoverInd) {
+		this.stopoverInd = stopoverInd;
+	}
+
+	public String getSuperCommissionCurrency() {
+		return this.superCommissionCurrency;
+	}
+
+	public void setSuperCommissionCurrency(String superCommissionCurrency) {
+		this.superCommissionCurrency = superCommissionCurrency;
+	}
+
+	public String getSuperCommissionMasterRecord() {
+		return this.superCommissionMasterRecord;
+	}
+
+	public void setSuperCommissionMasterRecord(String superCommissionMasterRecord) {
+		this.superCommissionMasterRecord = superCommissionMasterRecord;
+	}
+
+	public String getSuperCommissionPercentage() {
+		return this.superCommissionPercentage;
+	}
+
+	public void setSuperCommissionPercentage(String superCommissionPercentage) {
+		this.superCommissionPercentage = superCommissionPercentage;
+	}
+
+	public String getSuperCommissionType() {
+		return this.superCommissionType;
+	}
+
+	public void setSuperCommissionType(String superCommissionType) {
+		this.superCommissionType = superCommissionType;
+	}
+
+	public BigDecimal getSuperCommissionValue() {
+		return this.superCommissionValue;
+	}
+
+	public void setSuperCommissionValue(BigDecimal superCommissionValue) {
+		this.superCommissionValue = superCommissionValue;
+	}
+
+	public BigDecimal getSurchargeValue() {
+		return this.surchargeValue;
+	}
+
+	public void setSurchargeValue(BigDecimal surchargeValue) {
+		this.surchargeValue = surchargeValue;
+	}
+
+	public BigDecimal getTaxValue() {
+		return this.taxValue;
+	}
+
+	public void setTaxValue(BigDecimal taxValue) {
+		this.taxValue = taxValue;
+	}
+
+	public String getThruChangeOfGaugeIndicator() {
+		return this.thruChangeOfGaugeIndicator;
+	}
+
+	public void setThruChangeOfGaugeIndicator(String thruChangeOfGaugeIndicator) {
+		this.thruChangeOfGaugeIndicator = thruChangeOfGaugeIndicator;
+	}
+
+	public String getTicketedCabin() {
+		return this.ticketedCabin;
+	}
+
+	public void setTicketedCabin(String ticketedCabin) {
+		this.ticketedCabin = ticketedCabin;
+	}
+
+	public String getTicketedRbd() {
+		return this.ticketedRbd;
+	}
+
+	public void setTicketedRbd(String ticketedRbd) {
+		this.ticketedRbd = ticketedRbd;
+	}
+
+	public String getToAirport() {
+		return this.toAirport;
+	}
+
+	public void setToAirport(String toAirport) {
+		this.toAirport = toAirport;
+	}
+
+	public String getTpm() {
+		return this.tpm;
+	}
+
+	public void setTpm(String tpm) {
+		this.tpm = tpm;
+	}
+
+	public String getTransOcean() {
+		return this.transOcean;
+	}
+
+	public void setTransOcean(String transOcean) {
+		this.transOcean = transOcean;
+	}
+
+	public String getTypeOfIscClearingHouse() {
+		return this.typeOfIscClearingHouse;
+	}
+
+	public void setTypeOfIscClearingHouse(String typeOfIscClearingHouse) {
+		this.typeOfIscClearingHouse = typeOfIscClearingHouse;
+	}
+
+	public String getUatpDiscountType() {
+		return this.uatpDiscountType;
+	}
+
+	public void setUatpDiscountType(String uatpDiscountType) {
+		this.uatpDiscountType = uatpDiscountType;
+	}
+
+	public String getUatpMasterRecord() {
+		return this.uatpMasterRecord;
+	}
+
+	public void setUatpMasterRecord(String uatpMasterRecord) {
+		this.uatpMasterRecord = uatpMasterRecord;
+	}
+
+	public String getUtilType() {
+		return this.utilType;
+	}
+
+	public void setUtilType(String utilType) {
+		this.utilType = utilType;
+	}
+
+	public BigDecimal getYqyrResidual() {
+		return this.yqyrResidual;
+	}
+
+	public void setYqyrResidual(BigDecimal yqyrResidual) {
+		this.yqyrResidual = yqyrResidual;
+	}
+
+	public BigDecimal getYqyrTaxAsSurcharge() {
+		return this.yqyrTaxAsSurcharge;
+	}
+
+	public void setYqyrTaxAsSurcharge(BigDecimal yqyrTaxAsSurcharge) {
+		this.yqyrTaxAsSurcharge = yqyrTaxAsSurcharge;
+	}
+
+	public BigDecimal getYqyrTaxInUsd() {
+		return this.yqyrTaxInUsd;
+	}
+
+	public void setYqyrTaxInUsd(BigDecimal yqyrTaxInUsd) {
+		this.yqyrTaxInUsd = yqyrTaxInUsd;
+	}
+
+	public TicketMain getTicketMain() {
+		return ticketMain;
+	}
+
+	public void setTicketMain(TicketMain ticketMain) {
+		this.ticketMain = ticketMain;
+	}
+
+	public ItemProcessor<? extends AmadeusEtlRecord, ? extends AmadeusEtlRecord> processor() {
+		return null;
+	}
+
+	@Override
+	public LineTokenizer lineTokenizer() {
+		return null;
+	}
+
+	@Override
+	public FieldSetMapper<AmadeusEtlRecord> fieldSetMapper() {
+		return null;
+	}
+
+	@Override
+	public ItemWriter<? super AmadeusEtlRecord> amadeusEtlV2_20writer() {
+		return null;
+	}
+
+	@Override
+	public ItemWriter<? super AmadeusEtlRecord> amadeusEmdV1_00writer() {
+		return null;
+	}
+
+	@Override
+	public ItemWriter<? super AmadeusEtlRecord> amadeusEmdV1_01writer() {
+		return null;
+	}
+
+	@Override
+	public ItemWriter<? super AmadeusEtlRecord> amadeusEmdV1_03writer() {
+		return null;
+	}
+
+	@Override
+	public LineTokenizer emdV1_00Tokenizer() {
+		return null;
+	}
+
+	@Override
+	public LineTokenizer emdV1_03Tokenizer() {
+		return null;
+	}
+
+	@Override
+	public LineTokenizer emdV1_01Tokenizer() {
+		return null;
+	}
+
+	@Override
+	public ItemWriter<? super AmadeusEtlRecord> writer() {
+		return new AmadeusTicketMainWriter();
+	}
+
+	@Override
+	public ItemProcessor<? extends AmadeusEtlRecord, ? extends AmadeusEtlRecord> prodProcessor() {
+		return new AmadeusETLTicketMainProcessor();
+	}
+
+}
+
+
+package com.sgl.smartpra.batch.flown.amadeus.etl.app.domain;
+
+import java.io.Serializable;
+import javax.persistence.*;
+
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.file.mapping.FieldSetMapper;
+import org.springframework.batch.item.file.transform.LineTokenizer;
+
+import com.sgl.smartpra.batch.flown.amadeus.etl.app.processor.AmadeusETLTicketMainProcessor;
+import com.sgl.smartpra.batch.flown.amadeus.etl.app.writer.AmadeusTicketMainWriter;
+
+import java.math.BigDecimal;
+
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.List;
+
+/**
+ * The persistent class for the ticket_main database table.
+ * 
+ */
+@Entity
+@Table(name = "ticket_main", schema = "smartprasales")
+@NamedQuery(name = "TicketMain.findAll", query = "SELECT t FROM TicketMain t")
+public class TicketMain extends AmadeusEtlRecord implements Serializable {
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "trn_tkt_id", nullable = false)
+	private int trnTktId;
+
+	@Column(name = "agent_code")
+	private String agentCode;
+
+	@Column(name = "airline_issuing_agent")
+	private String airlineIssuingAgent;
+
+	@Column(name = "archive_flag")
+	private String archiveFlag;
+
+	@Column(name = "atbp_currency")
+	private int atbpCurrency;
+
+	@Column(name = "billing_airline")
+	private String billingAirline;
+
+	@Column(name = "bt_it_indicator")
+	private String btItIndicator;
+
+	@Column(name = "client_id")
+	private String clientId;
+
+	@Column(name = "conj_ticket_indicator")
+	private String conjTicketIndicator;
+
+	@Column(name = "created_by")
+	private String createdBy;
+
+	@Column(name = "created_date")
+	private Timestamp createdDate;
+
+	@Column(name = "currency_adjustment")
+	private String currencyAdjustment;
+
+	@Column(name = "currency_of_sale")
+	private String currencyOfSale;
+
+	@Column(name = "data_source")
+	private String dataSource;
+
+	@Column(name = "date_of_issue")
+	private Date dateOfIssue;
+
+	@Column(name = "doc_class")
+	private String docClass;
+
+	@Column(name = "doc_type")
+	private String docType;
+
+	@Column(name = "document_number")
+	private long documentNumber;
+
+	@Column(name = "document_unique_id")
+	private String documentUniqueId;
+
+	@Column(name = "dom_int_indicator")
+	private String domIntIndicator;
+
+	@Column(name = "emd_indicator")
+	private String emdIndicator;
+
+	private String endorsements;
+
+	@Column(name = "enroute_indicator")
+	private String enrouteIndicator;
+
+	@Column(name = "equivalent_currency_of_sale")
+	private String equivalentCurrencyOfSale;
+
+	@Column(name = "equivalent_fare")
+	private BigDecimal equivalentFare;
+
+	@Column(name = "eticket_ind")
+	private String eticketInd;
+
+	@Column(name = "excess_weight")
+	private String excessWeight;
+
+	@Column(name = "exchange_rate_month")
+	private Date exchangeRateMonth;
+
+	@Column(name = "fare_comp_currency")
+	private String fareCompCurrency;
+
+	private String fca;
+
+	@Column(name = "fdr_used")
+	private String fdrUsed;
+
+	@Column(name = "file_id")
+	private int fileId;
+
+	@Column(name = "file_source")
+	private String fileSource;
+
+	@Column(name = "free_award_ticket_indicator")
+	private String freeAwardTicketIndicator;
+
+	@Column(name = "gross_fare")
+	private BigDecimal grossFare;
+
+	@Column(name = "ignore_fca")
+	private String ignoreFca;
+
+	@Column(name = "invol_indicator")
+	private String involIndicator;
+
+	@Column(name = "is_validated")
+	private String isValidated;
+
+	private String isi;
+
+	@Column(name = "issue_airline")
+	private int issueAirline;
+
+	@Column(name = "journey_tournaround_airport")
+	private String journeyTournaroundAirport;
+
+	@Column(name = "journey_type")
+	private String journeyType;
+
+	@Column(name = "last_updated_by")
+	private String lastUpdatedBy;
+
+	@Column(name = "last_updated_date")
+	private Timestamp lastUpdatedDate;
+
+	@Column(name = "main_document")
+	private long mainDocument;
+
+	@Column(name = "migrated_ticket")
+	private String migratedTicket;
+
+	@Column(name = "mpr_percentage")
+	private BigDecimal mprPercentage;
+
+	@Column(name = "net_fare_amount")
+	private BigDecimal netFareAmount;
+
+	@Column(name = "net_fare_currency")
+	private String netFareCurrency;
+
+	@Column(name = "non_revenue_flag")
+	private String nonRevenueFlag;
+
+	private int nrid;
+
+	@Column(name = "online_destination")
+	private String onlineDestination;
+
+	@Column(name = "online_interline_offline")
+	private String onlineInterlineOffline;
+
+	@Column(name = "online_origin")
+	private String onlineOrigin;
+
+	@Column(name = "online_pot")
+	private String onlinePot;
+
+	@Column(name = "order_id")
+	private String orderId;
+
+	@Column(name = "original_agent_code")
+	private String originalAgentCode;
+
+	@Column(name = "original_date_of_issue")
+	private Date originalDateOfIssue;
+
+	@Column(name = "original_doc_class")
+	private String originalDocClass;
+
+	@Column(name = "original_document_number")
+	private String originalDocumentNumber;
+
+	@Column(name = "original_document_unique_id")
+	private long originalDocumentUniqueId;
+
+	@Column(name = "original_issue_airline")
+	private String originalIssueAirline;
+
+	@Column(name = "original_place_of_issue")
+	private String originalPlaceOfIssue;
+
+	@Column(name = "outdate_flag")
+	private String outdateFlag;
+
+	@Column(name = "passenger_dob")
+	private Date passengerDob;
+
+	@Column(name = "passenger_name")
+	private String passengerName;
+
+	@Column(name = "passenger_type")
+	private String passengerType;
+
+	@Column(name = "piece_weight_indicator")
+	private String pieceWeightIndicator;
+
+	@Column(name = "place_of_issue")
+	private String placeOfIssue;
+
+	@Column(name = "place_of_sale")
+	private String placeOfSale;
+
+	private String pnr;
+
+	@Column(name = "prime_reissue")
+	private String primeReissue;
+
+	@Column(name = "pror_src_ind")
+	private String prorSrcInd;
+
+	@Column(name = "reporting_agent_code")
+	private String reportingAgentCode;
+
+	private String rfic;
+
+	@Column(name = "roe_used")
+	private String roeUsed;
+
+	private String rpsi;
+
+	@Column(name = "sale_currency_ind")
+	private String saleCurrencyInd;
+
+	@Column(name = "sales_process_indicator")
+	private String salesProcessIndicator;
+
+	@Column(name = "sales_process_month")
+	private Date salesProcessMonth;
+
+	@Column(name = "side_trip")
+	private String sideTrip;
+
+	private String status;
+
+	@Column(name = "tax_process_indicator")
+	private String taxProcessIndicator;
+
+	private BigDecimal tdam;
+
+	@Column(name = "ticket_level_information")
+	private String ticketLevelInformation;
+
+	@Column(name = "time_of_issue")
+	private String timeOfIssue;
+
+	@Column(name = "tour_code")
+	private String tourCode;
+
+	@Column(name = "transaction_code")
+	private String transactionCode;
+
+	@Column(name = "transaction_type")
+	private String transactionType;
+
+	@Column(name = "transfer_flag")
+	private String transferFlag;
+
+	@Column(name = "travel_commencement_date")
+	private Date travelCommencementDate;
+
+	@Column(name = "true_destination")
+	private String trueDestination;
+
+	@Column(name = "true_origin")
+	private String trueOrigin;
+
+	@Column(name = "true_pot")
+	private String truePot;
+
+	@Column(name = "uatp_flag")
+	private String uatpFlag;
+
+	@Column(name = "utilization_coupon")
+	private String utilizationCoupon;
+
+	@Column(name = "utilization_doc")
+	private String utilizationDoc;
+
+	@Column(name = "utilization_type")
+	private String utilizationType;
+
+	@Column(name = "voucher_reason_code")
+	private String voucherReasonCode;
+
+	// bi-directional many-to-one association to TicketCoupon
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy ="ticketMain")
+	private List<TicketCoupon> ticketCoupons;
+
+	// bi-directional many-to-one association to TicketTax
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy ="ticketMain")
+	private List<TicketTax> ticketTaxs;
+
+	public TicketMain() {
+	}
+
+	public int getTrnTktId() {
+		return this.trnTktId;
+	}
+
+	public void setTrnTktId(int trnTktId) {
+		this.trnTktId = trnTktId;
+	}
+
+	public String getAgentCode() {
+		return this.agentCode;
+	}
+
+	public void setAgentCode(String agentCode) {
+		this.agentCode = agentCode;
+	}
+
+	public String getAirlineIssuingAgent() {
+		return this.airlineIssuingAgent;
+	}
+
+	public void setAirlineIssuingAgent(String airlineIssuingAgent) {
+		this.airlineIssuingAgent = airlineIssuingAgent;
+	}
+
+	public String getArchiveFlag() {
+		return this.archiveFlag;
+	}
+
+	public void setArchiveFlag(String archiveFlag) {
+		this.archiveFlag = archiveFlag;
+	}
+
+	public int getAtbpCurrency() {
+		return this.atbpCurrency;
+	}
+
+	public void setAtbpCurrency(int atbpCurrency) {
+		this.atbpCurrency = atbpCurrency;
+	}
+
+	public String getBillingAirline() {
+		return this.billingAirline;
+	}
+
+	public void setBillingAirline(String billingAirline) {
+		this.billingAirline = billingAirline;
+	}
+
+	public String getBtItIndicator() {
+		return this.btItIndicator;
+	}
+
+	public void setBtItIndicator(String btItIndicator) {
+		this.btItIndicator = btItIndicator;
+	}
+
+	public String getClientId() {
+		return this.clientId;
+	}
+
+	public void setClientId(String clientId) {
+		this.clientId = clientId;
+	}
+
+	public String getConjTicketIndicator() {
+		return this.conjTicketIndicator;
+	}
+
+	public void setConjTicketIndicator(String conjTicketIndicator) {
+		this.conjTicketIndicator = conjTicketIndicator;
+	}
+
+	public String getCreatedBy() {
+		return this.createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public Timestamp getCreatedDate() {
+		return this.createdDate;
+	}
+
+	public void setCreatedDate(Timestamp createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public String getCurrencyAdjustment() {
+		return this.currencyAdjustment;
+	}
+
+	public void setCurrencyAdjustment(String currencyAdjustment) {
+		this.currencyAdjustment = currencyAdjustment;
+	}
+
+	public String getCurrencyOfSale() {
+		return this.currencyOfSale;
+	}
+
+	public void setCurrencyOfSale(String currencyOfSale) {
+		this.currencyOfSale = currencyOfSale;
+	}
+
+	public String getDataSource() {
+		return this.dataSource;
+	}
+
+	public void setDataSource(String dataSource) {
+		this.dataSource = dataSource;
+	}
+
+	public Date getDateOfIssue() {
+		return dateOfIssue;
+	}
+
+	public void setDateOfIssue(Date dateOfIssue) {
+		this.dateOfIssue = dateOfIssue;
+	}
+
+	public String getDocClass() {
+		return this.docClass;
+	}
+
+	public void setDocClass(String docClass) {
+		this.docClass = docClass;
+	}
+
+	public String getDocType() {
+		return this.docType;
+	}
+
+	public void setDocType(String docType) {
+		this.docType = docType;
+	}
+
+	public long getDocumentNumber() {
+		return this.documentNumber;
+	}
+
+	public void setDocumentNumber(long documentNumber) {
+		this.documentNumber = documentNumber;
+	}
+
+	public String getDocumentUniqueId() {
+		return this.documentUniqueId;
+	}
+
+	public void setDocumentUniqueId(String documentUniqueId) {
+		this.documentUniqueId = documentUniqueId;
+	}
+
+	public String getDomIntIndicator() {
+		return this.domIntIndicator;
+	}
+
+	public void setDomIntIndicator(String domIntIndicator) {
+		this.domIntIndicator = domIntIndicator;
+	}
+
+	public String getEmdIndicator() {
+		return this.emdIndicator;
+	}
+
+	public void setEmdIndicator(String emdIndicator) {
+		this.emdIndicator = emdIndicator;
+	}
+
+	public String getEndorsements() {
+		return this.endorsements;
+	}
+
+	public void setEndorsements(String endorsements) {
+		this.endorsements = endorsements;
+	}
+
+	public String getEnrouteIndicator() {
+		return this.enrouteIndicator;
+	}
+
+	public void setEnrouteIndicator(String enrouteIndicator) {
+		this.enrouteIndicator = enrouteIndicator;
+	}
+
+	public String getEquivalentCurrencyOfSale() {
+		return this.equivalentCurrencyOfSale;
+	}
+
+	public void setEquivalentCurrencyOfSale(String equivalentCurrencyOfSale) {
+		this.equivalentCurrencyOfSale = equivalentCurrencyOfSale;
+	}
+
+	public BigDecimal getEquivalentFare() {
+		return this.equivalentFare;
+	}
+
+	public void setEquivalentFare(BigDecimal equivalentFare) {
+		this.equivalentFare = equivalentFare;
+	}
+
+	public String getEticketInd() {
+		return this.eticketInd;
+	}
+
+	public void setEticketInd(String eticketInd) {
+		this.eticketInd = eticketInd;
+	}
+
+	public String getExcessWeight() {
+		return this.excessWeight;
+	}
+
+	public void setExcessWeight(String excessWeight) {
+		this.excessWeight = excessWeight;
+	}
+
+	public String getFareCompCurrency() {
+		return this.fareCompCurrency;
+	}
+
+	public void setFareCompCurrency(String fareCompCurrency) {
+		this.fareCompCurrency = fareCompCurrency;
+	}
+
+	public String getFca() {
+		return this.fca;
+	}
+
+	public void setFca(String fca) {
+		this.fca = fca;
+	}
+
+	public String getFdrUsed() {
+		return this.fdrUsed;
+	}
+
+	public void setFdrUsed(String fdrUsed) {
+		this.fdrUsed = fdrUsed;
+	}
+
+	public int getFileId() {
+		return this.fileId;
+	}
+
+	public void setFileId(int fileId) {
+		this.fileId = fileId;
+	}
+
+	public String getFileSource() {
+		return this.fileSource;
+	}
+
+	public void setFileSource(String fileSource) {
+		this.fileSource = fileSource;
+	}
+
+	public String getFreeAwardTicketIndicator() {
+		return this.freeAwardTicketIndicator;
+	}
+
+	public void setFreeAwardTicketIndicator(String freeAwardTicketIndicator) {
+		this.freeAwardTicketIndicator = freeAwardTicketIndicator;
+	}
+
+	public BigDecimal getGrossFare() {
+		return this.grossFare;
+	}
+
+	public void setGrossFare(BigDecimal grossFare) {
+		this.grossFare = grossFare;
+	}
+
+	public String getIgnoreFca() {
+		return this.ignoreFca;
+	}
+
+	public void setIgnoreFca(String ignoreFca) {
+		this.ignoreFca = ignoreFca;
+	}
+
+	public String getInvolIndicator() {
+		return this.involIndicator;
+	}
+
+	public void setInvolIndicator(String involIndicator) {
+		this.involIndicator = involIndicator;
+	}
+
+	public String getIsValidated() {
+		return this.isValidated;
+	}
+
+	public void setIsValidated(String isValidated) {
+		this.isValidated = isValidated;
+	}
+
+	public String getIsi() {
+		return this.isi;
+	}
+
+	public void setIsi(String isi) {
+		this.isi = isi;
+	}
+
+	public int getIssueAirline() {
+		return this.issueAirline;
+	}
+
+	public void setIssueAirline(int issueAirline) {
+		this.issueAirline = issueAirline;
+	}
+
+	public String getJourneyTournaroundAirport() {
+		return this.journeyTournaroundAirport;
+	}
+
+	public void setJourneyTournaroundAirport(String journeyTournaroundAirport) {
+		this.journeyTournaroundAirport = journeyTournaroundAirport;
+	}
+
+	public String getJourneyType() {
+		return this.journeyType;
+	}
+
+	public void setJourneyType(String journeyType) {
+		this.journeyType = journeyType;
+	}
+
+	public String getLastUpdatedBy() {
+		return this.lastUpdatedBy;
+	}
+
+	public void setLastUpdatedBy(String lastUpdatedBy) {
+		this.lastUpdatedBy = lastUpdatedBy;
+	}
+
+	public Timestamp getLastUpdatedDate() {
+		return this.lastUpdatedDate;
+	}
+
+	public void setLastUpdatedDate(Timestamp lastUpdatedDate) {
+		this.lastUpdatedDate = lastUpdatedDate;
+	}
+
+	public long getMainDocument() {
+		return this.mainDocument;
+	}
+
+	public void setMainDocument(long mainDocument) {
+		this.mainDocument = mainDocument;
+	}
+
+	public String getMigratedTicket() {
+		return this.migratedTicket;
+	}
+
+	public void setMigratedTicket(String migratedTicket) {
+		this.migratedTicket = migratedTicket;
+	}
+
+	public BigDecimal getMprPercentage() {
+		return this.mprPercentage;
+	}
+
+	public void setMprPercentage(BigDecimal mprPercentage) {
+		this.mprPercentage = mprPercentage;
+	}
+
+	public BigDecimal getNetFareAmount() {
+		return this.netFareAmount;
+	}
+
+	public void setNetFareAmount(BigDecimal netFareAmount) {
+		this.netFareAmount = netFareAmount;
+	}
+
+	public String getNetFareCurrency() {
+		return this.netFareCurrency;
+	}
+
+	public void setNetFareCurrency(String netFareCurrency) {
+		this.netFareCurrency = netFareCurrency;
+	}
+
+	public String getNonRevenueFlag() {
+		return this.nonRevenueFlag;
+	}
+
+	public void setNonRevenueFlag(String nonRevenueFlag) {
+		this.nonRevenueFlag = nonRevenueFlag;
+	}
+
+	public int getNrid() {
+		return this.nrid;
+	}
+
+	public void setNrid(int nrid) {
+		this.nrid = nrid;
+	}
+
+	public String getOnlineDestination() {
+		return this.onlineDestination;
+	}
+
+	public void setOnlineDestination(String onlineDestination) {
+		this.onlineDestination = onlineDestination;
+	}
+
+	public String getOnlineInterlineOffline() {
+		return this.onlineInterlineOffline;
+	}
+
+	public void setOnlineInterlineOffline(String onlineInterlineOffline) {
+		this.onlineInterlineOffline = onlineInterlineOffline;
+	}
+
+	public String getOnlineOrigin() {
+		return this.onlineOrigin;
+	}
+
+	public void setOnlineOrigin(String onlineOrigin) {
+		this.onlineOrigin = onlineOrigin;
+	}
+
+	public String getOnlinePot() {
+		return this.onlinePot;
+	}
+
+	public void setOnlinePot(String onlinePot) {
+		this.onlinePot = onlinePot;
+	}
+
+	public String getOrderId() {
+		return this.orderId;
+	}
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+
+	public String getOriginalAgentCode() {
+		return this.originalAgentCode;
+	}
+
+	public void setOriginalAgentCode(String originalAgentCode) {
+		this.originalAgentCode = originalAgentCode;
+	}
+
+	public String getOriginalDocClass() {
+		return this.originalDocClass;
+	}
+
+	public void setOriginalDocClass(String originalDocClass) {
+		this.originalDocClass = originalDocClass;
+	}
+
+	public String getOriginalDocumentNumber() {
+		return this.originalDocumentNumber;
+	}
+
+	public void setOriginalDocumentNumber(String originalDocumentNumber) {
+		this.originalDocumentNumber = originalDocumentNumber;
+	}
+
+	public long getOriginalDocumentUniqueId() {
+		return this.originalDocumentUniqueId;
+	}
+
+	public void setOriginalDocumentUniqueId(long originalDocumentUniqueId) {
+		this.originalDocumentUniqueId = originalDocumentUniqueId;
+	}
+
+	public String getOriginalIssueAirline() {
+		return this.originalIssueAirline;
+	}
+
+	public void setOriginalIssueAirline(String originalIssueAirline) {
+		this.originalIssueAirline = originalIssueAirline;
+	}
+
+	public String getOriginalPlaceOfIssue() {
+		return this.originalPlaceOfIssue;
+	}
+
+	public void setOriginalPlaceOfIssue(String originalPlaceOfIssue) {
+		this.originalPlaceOfIssue = originalPlaceOfIssue;
+	}
+
+	public String getOutdateFlag() {
+		return this.outdateFlag;
+	}
+
+	public void setOutdateFlag(String outdateFlag) {
+		this.outdateFlag = outdateFlag;
+	}
+
+	public String getPassengerName() {
+		return this.passengerName;
+	}
+
+	public void setPassengerName(String passengerName) {
+		this.passengerName = passengerName;
+	}
+
+	public String getPassengerType() {
+		return this.passengerType;
+	}
+
+	public void setPassengerType(String passengerType) {
+		this.passengerType = passengerType;
+	}
+
+	public String getPieceWeightIndicator() {
+		return this.pieceWeightIndicator;
+	}
+
+	public void setPieceWeightIndicator(String pieceWeightIndicator) {
+		this.pieceWeightIndicator = pieceWeightIndicator;
+	}
+
+	public String getPlaceOfIssue() {
+		return this.placeOfIssue;
+	}
+
+	public void setPlaceOfIssue(String placeOfIssue) {
+		this.placeOfIssue = placeOfIssue;
+	}
+
+	public String getPlaceOfSale() {
+		return this.placeOfSale;
+	}
+
+	public void setPlaceOfSale(String placeOfSale) {
+		this.placeOfSale = placeOfSale;
+	}
+
+	public String getPnr() {
+		return this.pnr;
+	}
+
+	public void setPnr(String pnr) {
+		this.pnr = pnr;
+	}
+
+	public String getPrimeReissue() {
+		return this.primeReissue;
+	}
+
+	public void setPrimeReissue(String primeReissue) {
+		this.primeReissue = primeReissue;
+	}
+
+	public String getProrSrcInd() {
+		return this.prorSrcInd;
+	}
+
+	public void setProrSrcInd(String prorSrcInd) {
+		this.prorSrcInd = prorSrcInd;
+	}
+
+	public String getReportingAgentCode() {
+		return this.reportingAgentCode;
+	}
+
+	public void setReportingAgentCode(String reportingAgentCode) {
+		this.reportingAgentCode = reportingAgentCode;
+	}
+
+	public String getRfic() {
+		return this.rfic;
+	}
+
+	public void setRfic(String rfic) {
+		this.rfic = rfic;
+	}
+
+	public String getRoeUsed() {
+		return this.roeUsed;
+	}
+
+	public void setRoeUsed(String roeUsed) {
+		this.roeUsed = roeUsed;
+	}
+
+	public String getRpsi() {
+		return this.rpsi;
+	}
+
+	public void setRpsi(String rpsi) {
+		this.rpsi = rpsi;
+	}
+
+	public String getSaleCurrencyInd() {
+		return this.saleCurrencyInd;
+	}
+
+	public void setSaleCurrencyInd(String saleCurrencyInd) {
+		this.saleCurrencyInd = saleCurrencyInd;
+	}
+
+	public String getSalesProcessIndicator() {
+		return this.salesProcessIndicator;
+	}
+
+	public void setSalesProcessIndicator(String salesProcessIndicator) {
+		this.salesProcessIndicator = salesProcessIndicator;
+	}
+
+	public Date getExchangeRateMonth() {
+		return exchangeRateMonth;
+	}
+
+	public void setExchangeRateMonth(Date exchangeRateMonth) {
+		this.exchangeRateMonth = exchangeRateMonth;
+	}
+
+	public Date getOriginalDateOfIssue() {
+		return originalDateOfIssue;
+	}
+
+	public void setOriginalDateOfIssue(Date originalDateOfIssue) {
+		this.originalDateOfIssue = originalDateOfIssue;
+	}
+
+	public String getSideTrip() {
+		return this.sideTrip;
+	}
+
+	public void setSideTrip(String sideTrip) {
+		this.sideTrip = sideTrip;
+	}
+
+	public String getStatus() {
+		return this.status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getTaxProcessIndicator() {
+		return this.taxProcessIndicator;
+	}
+
+	public void setTaxProcessIndicator(String taxProcessIndicator) {
+		this.taxProcessIndicator = taxProcessIndicator;
+	}
+
+	public BigDecimal getTdam() {
+		return this.tdam;
+	}
+
+	public void setTdam(BigDecimal tdam) {
+		this.tdam = tdam;
+	}
+
+	public String getTicketLevelInformation() {
+		return this.ticketLevelInformation;
+	}
+
+	public void setTicketLevelInformation(String ticketLevelInformation) {
+		this.ticketLevelInformation = ticketLevelInformation;
+	}
+
+	public String getTimeOfIssue() {
+		return this.timeOfIssue;
+	}
+
+	public void setTimeOfIssue(String timeOfIssue) {
+		this.timeOfIssue = timeOfIssue;
+	}
+
+	public String getTourCode() {
+		return this.tourCode;
+	}
+
+	public void setTourCode(String tourCode) {
+		this.tourCode = tourCode;
+	}
+
+	public String getTransactionCode() {
+		return this.transactionCode;
+	}
+
+	public void setTransactionCode(String transactionCode) {
+		this.transactionCode = transactionCode;
+	}
+
+	public String getTransactionType() {
+		return this.transactionType;
+	}
+
+	public void setTransactionType(String transactionType) {
+		this.transactionType = transactionType;
+	}
+
+	public String getTransferFlag() {
+		return this.transferFlag;
+	}
+
+	public void setTransferFlag(String transferFlag) {
+		this.transferFlag = transferFlag;
+	}
+
+	public String getTrueDestination() {
+		return this.trueDestination;
+	}
+
+	public void setTrueDestination(String trueDestination) {
+		this.trueDestination = trueDestination;
+	}
+
+	public String getTrueOrigin() {
+		return this.trueOrigin;
+	}
+
+	public void setTrueOrigin(String trueOrigin) {
+		this.trueOrigin = trueOrigin;
+	}
+
+	public String getTruePot() {
+		return this.truePot;
+	}
+
+	public void setTruePot(String truePot) {
+		this.truePot = truePot;
+	}
+
+	public String getUatpFlag() {
+		return this.uatpFlag;
+	}
+
+	public void setUatpFlag(String uatpFlag) {
+		this.uatpFlag = uatpFlag;
+	}
+
+	public String getUtilizationCoupon() {
+		return this.utilizationCoupon;
+	}
+
+	public void setUtilizationCoupon(String utilizationCoupon) {
+		this.utilizationCoupon = utilizationCoupon;
+	}
+
+	public String getUtilizationDoc() {
+		return this.utilizationDoc;
+	}
+
+	public void setUtilizationDoc(String utilizationDoc) {
+		this.utilizationDoc = utilizationDoc;
+	}
+
+	public String getUtilizationType() {
+		return this.utilizationType;
+	}
+
+	public void setUtilizationType(String utilizationType) {
+		this.utilizationType = utilizationType;
+	}
+
+	public String getVoucherReasonCode() {
+		return this.voucherReasonCode;
+	}
+
+	public void setVoucherReasonCode(String voucherReasonCode) {
+		this.voucherReasonCode = voucherReasonCode;
+	}
+
+	public Date getPassengerDob() {
+		return passengerDob;
+	}
+
+	public void setPassengerDob(Date passengerDob) {
+		this.passengerDob = passengerDob;
+	}
+
+	public Date getSalesProcessMonth() {
+		return salesProcessMonth;
+	}
+
+	public void setSalesProcessMonth(Date salesProcessMonth) {
+		this.salesProcessMonth = salesProcessMonth;
+	}
+
+	public Date getTravelCommencementDate() {
+		return travelCommencementDate;
+	}
+
+	public void setTravelCommencementDate(Date travelCommencementDate) {
+		this.travelCommencementDate = travelCommencementDate;
+	}
+
+	public List<TicketCoupon> getTicketCoupons() {
+		return ticketCoupons;
+	}
+
+	public void setTicketCoupons(List<TicketCoupon> ticketCoupons) {
+		this.ticketCoupons = ticketCoupons;
+	}
+
+	public List<TicketTax> getTicketTaxs() {
+		return ticketTaxs;
+	}
+
+	public void setTicketTaxs(List<TicketTax> ticketTaxs) {
+		this.ticketTaxs = ticketTaxs;
+	}
+
+	public TicketTax addTicketTax(TicketTax ticketTax) {
+		getTicketTaxs().add(ticketTax);
+		ticketTax.setTicketMain(this);
+
+		return ticketTax;
+	}
+
+	public TicketTax removeTicketTax(TicketTax ticketTax) {
+		getTicketTaxs().remove(ticketTax);
+		ticketTax.setTicketMain(null);
+
+		return ticketTax;
+	}
+
+	
+
+	@Override
+	public LineTokenizer lineTokenizer() {
+		return null;
+	}
+
+	@Override
+	public FieldSetMapper<AmadeusEtlRecord> fieldSetMapper() {
+		return null;
+	}
+
+	@Override
+	public ItemWriter<? super AmadeusEtlRecord> amadeusEtlV2_20writer() {
+		return null;
+	}
+
+	@Override
+	public ItemWriter<? super AmadeusEtlRecord> amadeusEmdV1_00writer() {
+		return null;
+	}
+
+	@Override
+	public ItemWriter<? super AmadeusEtlRecord> amadeusEmdV1_01writer() {
+		return null;
+	}
+
+	@Override
+	public ItemWriter<? super AmadeusEtlRecord> amadeusEmdV1_03writer() {
+		return null;
+	}
+
+	@Override
+	public LineTokenizer emdV1_00Tokenizer() {
+		return null;
+	}
+
+	@Override
+	public LineTokenizer emdV1_03Tokenizer() {
+		return null;
+	}
+
+	@Override
+	public LineTokenizer emdV1_01Tokenizer() {
+		return null;
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public ItemWriter<? super AmadeusEtlRecord> writer() {
+		return new AmadeusTicketMainWriter();
+	}
+
+	@Override
+	public ItemProcessor<? extends AmadeusEtlRecord, ? extends AmadeusEtlRecord> processor() {
+		return null;
+	}
+
+	@Override
+	public ItemProcessor<? extends AmadeusEtlRecord, ? extends AmadeusEtlRecord> prodProcessor() {
+		return new AmadeusETLTicketMainProcessor();
+	}
+
+	@Override
+	public String toString() {
+		return "TicketMain [trnTktId=" + trnTktId + ", agentCode=" + agentCode + ", airlineIssuingAgent="
+				+ airlineIssuingAgent + ", archiveFlag=" + archiveFlag + ", atbpCurrency=" + atbpCurrency
+				+ ", billingAirline=" + billingAirline + ", btItIndicator=" + btItIndicator + ", clientId=" + clientId
+				+ ", conjTicketIndicator=" + conjTicketIndicator + ", createdBy=" + createdBy + ", createdDate="
+				+ createdDate + ", currencyAdjustment=" + currencyAdjustment + ", currencyOfSale=" + currencyOfSale
+				+ ", dataSource=" + dataSource + ", dateOfIssue=" + dateOfIssue + ", docClass=" + docClass
+				+ ", docType=" + docType + ", documentNumber=" + documentNumber + ", documentUniqueId="
+				+ documentUniqueId + ", domIntIndicator=" + domIntIndicator + ", emdIndicator=" + emdIndicator
+				+ ", endorsements=" + endorsements + ", enrouteIndicator=" + enrouteIndicator
+				+ ", equivalentCurrencyOfSale=" + equivalentCurrencyOfSale + ", equivalentFare=" + equivalentFare
+				+ ", eticketInd=" + eticketInd + ", excessWeight=" + excessWeight + ", exchangeRateMonth="
+				+ exchangeRateMonth + ", fareCompCurrency=" + fareCompCurrency + ", fca=" + fca + ", fdrUsed=" + fdrUsed
+				+ ", fileId=" + fileId + ", fileSource=" + fileSource + ", freeAwardTicketIndicator="
+				+ freeAwardTicketIndicator + ", grossFare=" + grossFare + ", ignoreFca=" + ignoreFca
+				+ ", involIndicator=" + involIndicator + ", isValidated=" + isValidated + ", isi=" + isi
+				+ ", issueAirline=" + issueAirline + ", journeyTournaroundAirport=" + journeyTournaroundAirport
+				+ ", journeyType=" + journeyType + ", lastUpdatedBy=" + lastUpdatedBy + ", lastUpdatedDate="
+				+ lastUpdatedDate + ", mainDocument=" + mainDocument + ", migratedTicket=" + migratedTicket
+				+ ", mprPercentage=" + mprPercentage + ", netFareAmount=" + netFareAmount + ", netFareCurrency="
+				+ netFareCurrency + ", nonRevenueFlag=" + nonRevenueFlag + ", nrid=" + nrid + ", onlineDestination="
+				+ onlineDestination + ", onlineInterlineOffline=" + onlineInterlineOffline + ", onlineOrigin="
+				+ onlineOrigin + ", onlinePot=" + onlinePot + ", orderId=" + orderId + ", originalAgentCode="
+				+ originalAgentCode + ", originalDateOfIssue=" + originalDateOfIssue + ", originalDocClass="
+				+ originalDocClass + ", originalDocumentNumber=" + originalDocumentNumber
+				+ ", originalDocumentUniqueId=" + originalDocumentUniqueId + ", originalIssueAirline="
+				+ originalIssueAirline + ", originalPlaceOfIssue=" + originalPlaceOfIssue + ", outdateFlag="
+				+ outdateFlag + ", passengerDob=" + passengerDob + ", passengerName=" + passengerName
+				+ ", passengerType=" + passengerType + ", pieceWeightIndicator=" + pieceWeightIndicator
+				+ ", placeOfIssue=" + placeOfIssue + ", placeOfSale=" + placeOfSale + ", pnr=" + pnr + ", primeReissue="
+				+ primeReissue + ", prorSrcInd=" + prorSrcInd + ", reportingAgentCode=" + reportingAgentCode + ", rfic="
+				+ rfic + ", roeUsed=" + roeUsed + ", rpsi=" + rpsi + ", saleCurrencyInd=" + saleCurrencyInd
+				+ ", salesProcessIndicator=" + salesProcessIndicator + ", salesProcessMonth=" + salesProcessMonth
+				+ ", sideTrip=" + sideTrip + ", status=" + status + ", taxProcessIndicator=" + taxProcessIndicator
+				+ ", tdam=" + tdam + ", ticketLevelInformation=" + ticketLevelInformation + ", timeOfIssue="
+				+ timeOfIssue + ", tourCode=" + tourCode + ", transactionCode=" + transactionCode + ", transactionType="
+				+ transactionType + ", transferFlag=" + transferFlag + ", travelCommencementDate="
+				+ travelCommencementDate + ", trueDestination=" + trueDestination + ", trueOrigin=" + trueOrigin
+				+ ", truePot=" + truePot + ", uatpFlag=" + uatpFlag + ", utilizationCoupon=" + utilizationCoupon
+				+ ", utilizationDoc=" + utilizationDoc + ", utilizationType=" + utilizationType + ", voucherReasonCode="
+				+ voucherReasonCode + ", ticketCoupons=" + ticketCoupons + ", ticketTaxs=" + ticketTaxs + "]";
+	}
+	
+	
+
+}
+
+package com.sgl.smartpra.batch.flown.amadeus.etl.app.domain;
+
+import java.io.Serializable;
+import javax.persistence.*;
+
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.file.mapping.FieldSetMapper;
+import org.springframework.batch.item.file.transform.LineTokenizer;
+
+import com.sgl.smartpra.batch.flown.amadeus.etl.app.processor.AmadeusETLTicketMainProcessor;
+import com.sgl.smartpra.batch.flown.amadeus.etl.app.processor.AmadeusETLTicketTaxProcessor;
+import com.sgl.smartpra.batch.flown.amadeus.etl.app.writer.AmadeusTicketMainWriter;
+
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+
+/**
+ * The persistent class for the ticket_tax database table.
+ * 
+ */
+@Entity
+@Table(name = "ticket_tax", schema = "smartprasales")
+@NamedQuery(name = "TicketTax.findAll", query = "SELECT t FROM TicketTax t")
+public class TicketTax extends AmadeusEtlRecord implements Serializable {
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "trn_tax_dtl")
+	private int trnTaxDtl;
+
+	// bi-directional many-to-one association to TicketMain
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "trn_tkt_id", referencedColumnName = "trn_tkt_id")
+	private TicketMain ticketMain;
+
+	@Column(name = "created_by")
+	private String createdBy;
+
+	@Column(name = "created_date")
+	private Timestamp createdDate;
+
+	@Column(name = "last_updated_by")
+	private String lastUpdatedBy;
+
+	@Column(name = "last_updated_date")
+	private Timestamp lastUpdatedDate;
+
+	@Column(name = "serial_no")
+	private int serialNo;
+
+	@Column(name = "tax_amount")
+	private BigDecimal taxAmount;
+
+	@Column(name = "tax_code")
+	private String taxCode;
+
+	@Column(name = "tax_currency")
+	private String taxCurrency;
+
+
+
+	public TicketTax() {
+	}
+
+	public int getTrnTaxDtl() {
+		return this.trnTaxDtl;
+	}
+
+	public void setTrnTaxDtl(int trnTaxDtl) {
+		this.trnTaxDtl = trnTaxDtl;
+	}
+
+	public String getCreatedBy() {
+		return this.createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public Timestamp getCreatedDate() {
+		return this.createdDate;
+	}
+
+	public void setCreatedDate(Timestamp createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public String getLastUpdatedBy() {
+		return this.lastUpdatedBy;
+	}
+
+	public void setLastUpdatedBy(String lastUpdatedBy) {
+		this.lastUpdatedBy = lastUpdatedBy;
+	}
+
+	public Timestamp getLastUpdatedDate() {
+		return this.lastUpdatedDate;
+	}
+
+	public void setLastUpdatedDate(Timestamp lastUpdatedDate) {
+		this.lastUpdatedDate = lastUpdatedDate;
+	}
+
+	public int getSerialNo() {
+		return this.serialNo;
+	}
+
+	public void setSerialNo(int serialNo) {
+		this.serialNo = serialNo;
+	}
+
+	public BigDecimal getTaxAmount() {
+		return this.taxAmount;
+	}
+
+	public void setTaxAmount(BigDecimal taxAmount) {
+		this.taxAmount = taxAmount;
+	}
+
+	public String getTaxCode() {
+		return this.taxCode;
+	}
+
+	public void setTaxCode(String taxCode) {
+		this.taxCode = taxCode;
+	}
+
+	public String getTaxCurrency() {
+		return this.taxCurrency;
+	}
+
+	public void setTaxCurrency(String taxCurrency) {
+		this.taxCurrency = taxCurrency;
+	}
+
+	public TicketMain getTicketMain() {
+		return this.ticketMain;
+	}
+
+	public void setTicketMain(TicketMain ticketMain) {
+		this.ticketMain = ticketMain;
+	}
+
+	public ItemProcessor<? extends AmadeusEtlRecord, ? extends AmadeusEtlRecord> processor() {
+		return new AmadeusETLTicketTaxProcessor();
+	}
+
+	@Override
+	public LineTokenizer lineTokenizer() {
+		return null;
+	}
+
+	@Override
+	public FieldSetMapper<AmadeusEtlRecord> fieldSetMapper() {
+		return null;
+	}
+
+	@Override
+	public ItemWriter<? super AmadeusEtlRecord> amadeusEtlV2_20writer() {
+		return null;
+	}
+
+	@Override
+	public ItemWriter<? super AmadeusEtlRecord> amadeusEmdV1_00writer() {
+		return null;
+	}
+
+	@Override
+	public ItemWriter<? super AmadeusEtlRecord> amadeusEmdV1_01writer() {
+		return null;
+	}
+
+	@Override
+	public ItemWriter<? super AmadeusEtlRecord> amadeusEmdV1_03writer() {
+		return null;
+	}
+
+	@Override
+	public LineTokenizer emdV1_00Tokenizer() {
+		return null;
+	}
+
+	@Override
+	public LineTokenizer emdV1_03Tokenizer() {
+		return null;
+	}
+
+	@Override
+	public LineTokenizer emdV1_01Tokenizer() {
+		return null;
+	}
+
+	@Override
+	public ItemWriter<? super AmadeusEtlRecord> writer() {
+		return new AmadeusTicketMainWriter();
+	}
+
+	@Override
+	public ItemProcessor<? extends AmadeusEtlRecord, ? extends AmadeusEtlRecord> prodProcessor() {
+		return new AmadeusETLTicketMainProcessor();
+
+	}
+
+}

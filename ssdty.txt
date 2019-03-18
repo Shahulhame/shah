@@ -1,0 +1,195 @@
+package com.sgl.smartpra.batch.flown.amadeus.etl.app.processor;
+
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.batch.item.ItemProcessor;
+
+import com.sgl.smartpra.batch.flown.amadeus.etl.app.domain.AmadeusEtlProdRecord;
+import com.sgl.smartpra.batch.flown.amadeus.etl.app.domain.AmadeusNewTaxStaging;
+import com.sgl.smartpra.batch.flown.amadeus.etl.app.domain.AmadeusRecordDetailStaging;
+import com.sgl.smartpra.batch.flown.amadeus.etl.app.domain.AmadeusRecordStaging;
+import com.sgl.smartpra.batch.flown.amadeus.etl.app.domain.TicketCoupon;
+import com.sgl.smartpra.batch.flown.amadeus.etl.app.domain.TicketMain;
+import com.sgl.smartpra.batch.flown.amadeus.etl.app.domain.TicketTax;
+
+@SuppressWarnings("serial")
+public class AmadeusETLTicketMainProcessor extends AmadeusProcessor
+		implements ItemProcessor<AmadeusRecordStaging, AmadeusEtlProdRecord> {
+
+	private static final Logger log = LoggerFactory.getLogger(AmadeusETLTicketMainProcessor.class);
+
+	@Override
+	public AmadeusEtlProdRecord process(AmadeusRecordStaging amadeusRecordStaging) throws Exception {
+
+		// System.out.println("Object"+amadeusRecordStaging);
+		String[] test = new String[] { "BL", "BT", "EL" };
+		log.info("Object : {}", amadeusRecordStaging);
+		AmadeusEtlProdRecord amadeusEtlProdRecord = new AmadeusEtlProdRecord();
+		LocalDate today = LocalDate.now();
+		SimpleDateFormat format = new SimpleDateFormat("ddMMyy");
+		SimpleDateFormat format3 = new SimpleDateFormat("ddMMyy");
+		Date myDefaultDate = format.parse("011118");
+		int month = today.getMonthValue();
+		BigDecimal bigDecimalCurrency;
+		//SimpleDateFormat format = new SimpleDateFormat("ddMMyy");
+		SimpleDateFormat format1 = new SimpleDateFormat("ddMMMyy");
+
+		Date date;
+		Calendar cal = Calendar.getInstance();
+		Date dt = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH).parse(String.valueOf(19000101));
+		
+		TicketMain ticketMain = new TicketMain();
+		SimpleDateFormat formatter = new SimpleDateFormat("dd/MMM/yyyy");
+		try {
+			ticketMain.setIssueAirline((910));
+		} catch (Exception e3) {
+			e3.printStackTrace();
+		}
+		ticketMain.setDocumentUniqueId(amadeusRecordStaging.getDocumentNumber());
+		try {
+			ticketMain.setGrossFare(new BigDecimal("245678.9"));
+		} catch (Exception e2) {
+			e2.printStackTrace();
+		}
+		ticketMain.setCurrencyOfSale(amadeusRecordStaging.getCurrencyOfReportedFare());
+
+		try {
+			ticketMain.setEquivalentFare(bigDecimalCurrency = new BigDecimal(amadeusRecordStaging.getEquivalentFare()));
+		} catch (Exception e) {
+
+		}
+		ticketMain.setEquivalentCurrencyOfSale(amadeusRecordStaging.getPaymentCurrency());
+		ticketMain.setAgentCode(amadeusRecordStaging.getAgencyNumber());
+		try {
+			if (amadeusRecordStaging.getIssueDate() != null
+					&& !amadeusRecordStaging.getIssueDate().isEmpty()) {
+			System.out.println(
+					"Issue Date---->" + amadeusRecordStaging.getIssueDate());
+			ticketMain.setDateOfIssue(date = format.parse(amadeusRecordStaging.getIssueDate()));
+					}else {
+						ticketMain.setDateOfIssue(myDefaultDate);
+					}
+		} catch (Exception e2) {
+			e2.printStackTrace();
+		}
+		if(amadeusRecordStaging.getBookingReference() != null
+				&& !amadeusRecordStaging.getIssueDate().isEmpty()){
+					ticketMain.setPnr(amadeusRecordStaging.getBookingReference());
+				}else {
+					ticketMain.setPnr("SHA");
+				}
+		
+		if(amadeusRecordStaging.getTourCode()!= null
+				&& !amadeusRecordStaging.getTourCode().isEmpty()){
+			ticketMain.setTourCode(amadeusRecordStaging.getTourCode());
+				}else {
+					ticketMain.setTourCode("SHA");
+				}
+			
+		
+		ticketMain.setFca(amadeusRecordStaging.getFareConstruction());
+		ticketMain.setPassengerName(amadeusRecordStaging.getPassengerName());
+		//ticketMain.setOriginalAgentCode(amadeusRecordStaging.getOriginalIssueInformation());
+		ticketMain.setCreatedBy("Shahul");
+		ticketMain.setCreatedDate(new Timestamp(new Date().getTime()));
+		ticketMain.setClientId("QR");
+		ticketMain.setFileId(1);
+		ticketMain.setDocType("S");
+		ticketMain.setReportingAgentCode(amadeusRecordStaging.getAgencyNumber());
+		ticketMain.setRpsi("A");
+
+		/*
+		 * try { if(amadeusRecordStaging.getDocumentType()!= null) {
+		 * ticketMain.setDocType(amadeusRecordStaging.getDocumentType()); }
+		 * 
+		 * } catch (Exception e2) { e2.printStackTrace(); }
+		 */
+		try {
+			if (amadeusRecordStaging.getOriginalIssueInformation() != null
+					&& !amadeusRecordStaging.getOriginalIssueInformation().isEmpty()) {
+				System.out.println(
+						"DATEEEEEEEEEEE" + amadeusRecordStaging.getOriginalIssueInformation().substring(18, 24));
+				ticketMain.setOriginalDateOfIssue(
+						date = format1.parse(amadeusRecordStaging.getOriginalIssueInformation().substring(18, 24)));
+			}
+			// ticketMain.setOriginalDateOfIssue(date=format1.parse(amadeusRecordStaging.getOriginalIssueInformation().substring(17,
+			// 23)));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		//ticketMain.setOriginalDocumentNumber(amadeusRecordStaging.getOriginalIssueInformation());
+		//ticketMain.setOriginalIssueAirline(amadeusRecordStaging.getOriginalIssueInformation());
+		//ticketMain.setOriginalPlaceOfIssue(amadeusRecordStaging.getOriginalIssueInformation());
+		ticketMain.setEndorsements(amadeusRecordStaging.getEndorsementRestrictionText());
+		ticketMain.setEticketInd(amadeusRecordStaging.getTicketingModeIndicator());
+		ticketMain.setConjTicketIndicator(amadeusRecordStaging.getTicketingModeIndicator());
+		// ticketMain.setMigratedTicket(amadeusRecordStaging.getTicketingModeIndicator());
+		try {
+			if (amadeusRecordStaging.getReportedFare().equals("IT")) {
+				ticketMain.setBtItIndicator(amadeusRecordStaging.getReportedFare());
+			} else if (amadeusRecordStaging.getReportedFare().equals("BT")) {
+				ticketMain.setBtItIndicator(amadeusRecordStaging.getReportedFare());
+			} else if (amadeusRecordStaging.getReportedFare().equals("BL")) {
+				ticketMain.setBtItIndicator(amadeusRecordStaging.getReportedFare());
+			}
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		ticketMain.setFileSource(amadeusRecordStaging.getFileSource());
+		ticketMain.setDataSource("ETL");
+		
+
+		TicketCoupon ticketCoupon = new TicketCoupon();
+		for (AmadeusRecordDetailStaging recordDetailStaging : amadeusRecordStaging.getAmadeusRecordDetailStgs()) {
+			ticketCoupon.setCouponNumber(recordDetailStaging.getCouponNumber());
+			ticketCoupon.setFromAirport(recordDetailStaging.getOrigin());
+			ticketCoupon.setToAirport(recordDetailStaging.getDestination());
+			ticketCoupon.setPlannedOptgCxrAlphaCode(recordDetailStaging.getAirlineCode());
+			
+			
+			try {
+				ticketCoupon.setSectorNumber(Integer.parseInt("12"));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+
+			ticketCoupon.setArrivalDate(recordDetailStaging.getFlightArrivalDate());
+		
+			
+			ticketCoupon.setCreatedBy("Shahul");
+			
+			ticketCoupon.setCreatedDate(new Timestamp(new Date().getTime()));
+
+		}
+		
+
+		TicketTax ticketTax = new TicketTax();
+		for (AmadeusNewTaxStaging newTaxStaging : amadeusRecordStaging.getAmadeusNewTaxStgs()) {
+			ticketTax.setTaxCode("A");
+			try {
+				ticketTax.setTaxAmount(new BigDecimal("245678.9"));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		ticketTax.setTaxCurrency("EGP");
+		ticketTax.setCreatedBy("Shahul");
+		ticketTax.setCreatedDate(new Timestamp(new Date().getTime()));
+		amadeusEtlProdRecord.setTicketMain(ticketMain);
+		amadeusEtlProdRecord.setTicketCoupon(ticketCoupon);
+		amadeusEtlProdRecord.setTicketTax(ticketTax);
+
+		return amadeusEtlProdRecord;
+	}
+
+}

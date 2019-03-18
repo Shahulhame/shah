@@ -1,0 +1,127 @@
+package com.sgl.smartpra.batch.flown.amadeus.etl.app.writer;
+
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.batch.item.ItemWriter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.sgl.smartpra.batch.flown.amadeus.etl.app.common.AppConstants;
+import com.sgl.smartpra.batch.flown.amadeus.etl.app.domain.AmadeusEtlRecord;
+import com.sgl.smartpra.batch.flown.amadeus.etl.app.domain.AmadeusNewTaxStaging;
+import com.sgl.smartpra.batch.flown.amadeus.etl.app.domain.AmadeusRecordDetailStaging;
+import com.sgl.smartpra.batch.flown.amadeus.etl.app.domain.AmadeusRecordStaging;
+import com.sgl.smartpra.batch.flown.amadeus.etl.app.domain.SharedEntity;
+import com.sgl.smartpra.batch.flown.amadeus.etl.app.repository.AmadeusRecordStagingRepository;
+
+@Component
+public class AmadeusRecordStagingEMDV1_01Writer<T extends AmadeusEtlRecord>
+		implements ItemWriter<AmadeusRecordStaging> {
+
+	private static final Logger log = LoggerFactory.getLogger(AmadeusRecordStagingEMDV1_01Writer.class);
+
+	@Autowired
+	private AmadeusRecordStagingRepository amadeusRecordStagingRepository;
+
+	@Autowired
+	private SharedEntity sharedEntity;
+
+	@Override
+	public void write(List<? extends AmadeusRecordStaging> amadeusRecordStagingList) throws Exception {
+
+		for (AmadeusRecordStaging amadeusRecordStaging : amadeusRecordStagingList) {
+
+			ArrayList<AmadeusRecordDetailStaging> amadeusRecordDetailStagingList;
+			ArrayList<AmadeusNewTaxStaging> amadeusNewTaxStagingList;
+			String couponNumber;
+			AmadeusRecordDetailStaging amadeusRecordDetailStaging;
+			AmadeusNewTaxStaging amadeusNewTaxStaging;
+			amadeusNewTaxStagingList = new ArrayList<AmadeusNewTaxStaging>();
+			String taxDetailStr = amadeusRecordStaging.getNewTax();
+			int taxCount = taxDetailStr.length() / 14;
+
+			for (int k = 0; k < taxCount; k++) {
+
+				amadeusNewTaxStaging = new AmadeusNewTaxStaging();
+				amadeusNewTaxStaging.setNewTaxCode(taxDetailStr.substring((k * 14), (k * 14) + 2));
+				amadeusNewTaxStaging.setNewTaxValue(taxDetailStr.substring((k * 14) + 2, (k * 14) + 14));
+				amadeusNewTaxStaging.setCreatedBy(AppConstants.CREATED_BY);
+				amadeusNewTaxStaging.setCreatedDate(new Timestamp(new Date().getTime()));
+				amadeusNewTaxStaging.setAmadeusRecordStg(sharedEntity.getAmadeusRecordStaging());
+				amadeusNewTaxStaging.setAmadeusRecordStg(amadeusRecordStaging);
+				amadeusNewTaxStagingList.add(amadeusNewTaxStaging);
+
+			}
+
+			amadeusRecordDetailStagingList = new ArrayList<AmadeusRecordDetailStaging>();
+			String couponDetailStr = amadeusRecordStaging.getCoupons();
+			int couponCount = couponDetailStr.length() / 95;
+			for (int i = 0; i < couponCount; i++) {
+				log.info("Enter into AmadeusDetail Writer");
+				couponNumber = couponDetailStr.substring((i * 95), (i * 95) + 2);
+				if (couponNumber != null && couponNumber.length() > 0) {
+					amadeusRecordDetailStaging = new AmadeusRecordDetailStaging();
+					amadeusRecordDetailStaging.setCouponNumber(amadeusRecordStaging.getCouponNumber());
+
+					amadeusRecordDetailStaging.setSaleCouponNumber(couponNumber);
+					amadeusRecordDetailStaging.setAirlineCode(couponDetailStr.substring((i * 95) + 2, (i * 95) + 5));
+					amadeusRecordDetailStaging.setOrigin(couponDetailStr.substring((i * 95) + 5, (i * 95) + 10));
+					amadeusRecordDetailStaging.setDestination(couponDetailStr.substring((i * 95) + 10, (i * 95) + 15));
+					amadeusRecordDetailStaging
+							.setReasonForIssuanceSubCode(couponDetailStr.substring((i * 95) + 15, (i * 95) + 18));
+					amadeusRecordDetailStaging
+							.setEmdTotalNoOfUnits(couponDetailStr.substring((i * 95) + 18, (i * 95) + 33));
+					amadeusRecordDetailStaging
+							.setEbtChargeQualify(couponDetailStr.substring((i * 95) + 33, (i * 95) + 36));
+					amadeusRecordDetailStaging
+							.setEbtUnitQualifier(couponDetailStr.substring((i * 95) + 36, (i * 95) + 39));
+
+					amadeusRecordDetailStaging
+							.setEbtChargeCurrency(couponDetailStr.substring((i * 95) + 39, (i * 95) + 42));
+					amadeusRecordDetailStaging
+							.setEbtRatePerUnit(couponDetailStr.substring((i * 95) + 42, (i * 95) + 60));
+
+					amadeusRecordDetailStaging.setFeeOwner(couponDetailStr.substring((i * 95) + 60, (i * 95) + 63));
+					amadeusRecordDetailStaging.setCouponValue(couponDetailStr.substring((i * 95) + 63, (i * 95) + 75));
+
+					amadeusRecordDetailStaging
+							.setNotValidBeforeDate(couponDetailStr.substring((i * 95) + 75, (i * 95) + 83));
+					amadeusRecordDetailStaging
+							.setNotValidAfterDate(couponDetailStr.substring((i * 95) + 83, (i * 95) + 91));
+					amadeusRecordDetailStaging
+							.setNonExchangeableIndicator(couponDetailStr.substring((i * 95) + 91, (i * 95) + 92));
+					amadeusRecordDetailStaging
+							.setNonInterlinableIndicator(couponDetailStr.substring((i * 95) + 92, (i * 95) + 93));
+					amadeusRecordDetailStaging
+							.setConsumedAtIssuanceIndicator(couponDetailStr.substring((i * 95) + 93, (i * 95) + 94));
+					amadeusRecordDetailStaging
+							.setInvoluntaryIndicator(couponDetailStr.substring((i * 95) + 94, (i * 95) + 95));
+					amadeusRecordDetailStaging.setCreatedBy(AppConstants.CREATED_BY);
+					amadeusRecordDetailStaging.setCreatedDate(new Timestamp(new Date().getTime()));
+					amadeusRecordDetailStaging.setAmadeusRecordStg(sharedEntity.getAmadeusRecordStaging());
+					amadeusRecordDetailStaging.setAmadeusRecordStg(amadeusRecordStaging);
+					amadeusRecordDetailStagingList.add(amadeusRecordDetailStaging);
+
+				} else {
+					break;
+				}
+
+			}
+			// Add coupon
+			amadeusRecordStaging.setAmadeusRecordDetailStgs(amadeusRecordDetailStagingList);
+			// Add tax
+			amadeusRecordStaging.setAmadeusNewTaxStgs(amadeusNewTaxStagingList);
+			amadeusRecordStaging.setFileSource(AppConstants.FILE_SOURCE_EMD);
+			amadeusRecordStaging.setStatus(AppConstants.STATUS);
+
+		}
+
+		amadeusRecordStagingRepository.saveAll(amadeusRecordStagingList);
+		amadeusRecordStagingRepository.flush();
+	}
+}
